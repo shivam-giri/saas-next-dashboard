@@ -2,7 +2,6 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/sidebar";
-import { TopNav } from "@/components/dashboard/topnav";
 
 export default async function WorkspaceLayout({
   children,
@@ -40,10 +39,7 @@ export default async function WorkspaceLayout({
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Server Component Top Navigation (Handles Auth & Logout) */}
-        <TopNav />
-        
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
           {children}
         </main>
       </div>

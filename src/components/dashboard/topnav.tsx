@@ -1,13 +1,16 @@
 import { auth, signOut } from "@/lib/auth";
+type TopNavProps = {
+  title: string;
+};
 
-export async function TopNav() {
+export async function TopNav({ title }: TopNavProps) {
   const session = await auth();
 
   return (
     <header className="h-16 border-b bg-white flex items-center justify-between px-6 shadow-sm z-10 transition-all">
       <div className="flex items-center">
         {/* We can put Mobile Menu Toggle or Breadcrumbs here later */}
-        <h2 className="text-xl font-bold text-gray-800 tracking-tight">Overview</h2>
+        <h2 className="text-xl font-bold text-gray-800 tracking-tight">{title}</h2>
       </div>
 
       <div className="flex items-center gap-4">

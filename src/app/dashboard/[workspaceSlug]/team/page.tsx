@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { inviteUserAction, removeMemberAction } from "@/app/actions/team";
 import { redirect } from "next/navigation";
+import { TopNav } from "@/components/dashboard/topnav";
 
 export default async function TeamPage({
     params,
@@ -49,7 +50,9 @@ export default async function TeamPage({
     }
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8">
+        <div className="flex flex-col h-full">
+            <TopNav title="Team Members" />
+            <div className="max-w-5xl mx-auto space-y-8 p-4 md:p-8 w-full">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-slate-900">Team Members</h1>
@@ -149,6 +152,7 @@ export default async function TeamPage({
                 {allMembers.length === 0 && (
                     <div className="p-8 text-center text-slate-500">No members found.</div>
                 )}
+            </div>
             </div>
         </div>
     );

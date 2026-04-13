@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { hasActiveSubscription } from "@/lib/stripe";
 import { createCheckoutSession } from "@/app/actions/billing";
 import { notFound, redirect } from "next/navigation";
+import { TopNav } from "@/components/dashboard/topnav";
 
 export default async function BillingPage({
     params,
@@ -30,7 +31,9 @@ export default async function BillingPage({
   const checkoutAction = createCheckoutSession.bind(null, workspace.id);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="flex flex-col h-full">
+      <TopNav title="Billing & Plans" />
+      <div className="max-w-4xl mx-auto space-y-8 p-4 md:p-8 w-full">
       <h1 className="text-3xl font-bold tracking-tight">Billing & Plans</h1>
 
       {/* Feature Gating Example inside the UI */}
@@ -85,6 +88,7 @@ export default async function BillingPage({
             </form>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

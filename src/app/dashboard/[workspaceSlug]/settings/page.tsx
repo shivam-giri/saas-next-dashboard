@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateWorkspaceAction, deleteWorkspaceAction } from "@/app/actions/settings";
 import { redirect, notFound } from "next/navigation";
+import { TopNav } from "@/components/dashboard/topnav";
 
 export default async function SettingsPage({
     params,
@@ -36,7 +37,9 @@ export default async function SettingsPage({
     };
 
     return (
-        <div className="max-w-3xl mx-auto space-y-8">
+        <div className="flex flex-col h-full">
+            <TopNav title="Settings" />
+            <div className="max-w-3xl mx-auto space-y-8 p-4 md:p-8 w-full">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight text-slate-900">Workspace Settings</h1>
                 <p className="text-slate-500 mt-1">Manage {workspace.name}'s identity and dangerous configurations.</p>
@@ -121,6 +124,7 @@ export default async function SettingsPage({
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 }
