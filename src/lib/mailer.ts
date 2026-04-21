@@ -111,3 +111,43 @@ export async function sendInvitationEmail({
     html,
   });
 }
+
+export async function sendMagicLinkEmail(toEmail: string, url: string) {
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Sign in to SaaSify</title>
+    </head>
+    <body style="margin:0;padding:0;background:#ffffff;font-family:'Segoe UI',Arial,sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+        <tr>
+          <td align="center">
+            <table width="400" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #eaeaea;border-radius:8px;padding:32px;text-align:center;">
+              <tr>
+                <td>
+                  <h1 style="margin:0 0 16px;color:#111827;font-size:24px;font-weight:700;">SaaSify</h1>
+                  <p style="margin:0 0 24px;color:#4b5563;font-size:16px;">Click the link below to sign in to your account.</p>
+                  <a href="${url}" style="display:inline-block;background:#000000;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:600;font-size:16px;">
+                    Sign In
+                  </a>
+                  <p style="margin:24px 0 0;color:#9ca3af;font-size:12px;">If you didn't request this email, you can safely ignore it.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  await transporter.sendMail({
+    from: `"SaaSify" <${process.env.SMTP_USER}>`,
+    to: toEmail,
+    subject: "Sign in to SaaSify",
+    html,
+  });
+}

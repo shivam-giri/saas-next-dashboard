@@ -1,11 +1,15 @@
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
+import GitHub from "next-auth/providers/github";
 
-// Notice this is just a configuration object, no database adapter is imported here!
+// Edge-safe providers only (no Prisma, no nodemailer)
 export const authConfig = {
-  providers: [Google],
+  providers: [Google, GitHub],
+  pages: {
+    signIn: "/auth/signin",
+    newUser: "/onboarding",
+  },
   session: {
-    // We are using database sessions for now.
     strategy: "database",
   },
   callbacks: {
