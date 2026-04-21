@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  allowedDevOrigins: ['undeluded-neutrally-daine.ngrok-free.dev'],
-};
+const nextConfig = {};
 
 module.exports = nextConfig;
