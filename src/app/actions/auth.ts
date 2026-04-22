@@ -43,25 +43,8 @@ export async function signUpAction(prevState: any, formData: FormData) {
     },
   });
 
-  // Sign in immediately after creation.
-  // In NextAuth v5 beta + database sessions, signIn() may not throw NEXT_REDIRECT
-  // reliably, so we catch AuthErrors explicitly then redirect manually.
-  try {
-    await signIn("credentials", {
-      email: email.toLowerCase(),
-      password,
-      // No redirectTo here — we handle it below
-    });
-  } catch (error) {
-    if (isRedirectError(error)) throw error; // propagate Next.js redirects
-    if (error instanceof AuthError) {
-      return { error: "Sign-in after registration failed. Please sign in manually." };
-    }
-    return { error: "Something went wrong." };
-  }
-
-  // Explicit redirect — reached only when signIn succeeds without throwing
-  redirect("/onboarding");
+  // Redirect to sign-in so the user logs in with their new credentials
+  redirect("/auth/signin");
 }
 
 export async function signInCredentialsAction(prevState: any, formData: FormData) {
@@ -73,10 +56,10 @@ export async function signInCredentialsAction(prevState: any, formData: FormData
     await signIn("credentials", {
       email: email.toLowerCase(),
       password,
-      // No redirectTo — we redirect explicitly below so both code paths work
+      redirectTo: callbackUrl,
     });
   } catch (error) {
-    if (isRedirectError(error)) throw error; // propagate if NextAuth does throw
+    if (isRedirectError(error)) throw error; // propagate Next.js NEXT_REDIRECT
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
@@ -88,7 +71,7 @@ export async function signInCredentialsAction(prevState: any, formData: FormData
     return { error: "Something went wrong. Please try again." };
   }
 
-  // signIn() returned normally (success without throwing) — redirect manually
+  // Fallback redirect (only reached if signIn() returns without throwing)
   redirect(callbackUrl);
 }
 

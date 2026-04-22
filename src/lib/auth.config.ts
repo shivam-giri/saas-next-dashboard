@@ -10,12 +10,23 @@ export const authConfig = {
     newUser: "/onboarding",
   },
   session: {
-    strategy: "database",
+    // JWT strategy works with ALL providers (Credentials + OAuth).
+    // Database strategy breaks Credentials logins because NextAuth cannot
+    // create a DB Session without a linked Account row.
+    strategy: "jwt",
   },
   callbacks: {
-    session({ session, user }) {
-      if (session.user && user) {
-        session.user.id = user.id;
+    // Encode the DB user id into the JWT token on sign-in
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    // Expose the user id to the client session
+    session({ session, token }) {
+      if (session.user && token.id) {
+        session.user.id = token.id as string;
       }
       return session;
     },
