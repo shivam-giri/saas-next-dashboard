@@ -8,86 +8,86 @@ import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export async function signUpAction(prevState: any, formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
-  const name = formData.get("name") as string;
+ const email = formData.get("email") as string;
+ const password = formData.get("password") as string;
+ const confirmPassword = formData.get("confirmPassword") as string;
+ const name = formData.get("name") as string;
 
-  if (!email || !password || !name) {
-    return { error: "Name, email, and password are required." };
-  }
+ if (!email || !password || !name) {
+ return { error: "Name, email, and password are required." };
+ }
 
-  if (password.length < 8) {
-    return { error: "Password must be at least 8 characters long." };
-  }
+ if (password.length < 8) {
+ return { error: "Password must be at least 8 characters long." };
+ }
 
-  if (password !== confirmPassword) {
-    return { error: "Passwords do not match." };
-  }
+ if (password !== confirmPassword) {
+ return { error: "Passwords do not match." };
+ }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
-  });
+ const existingUser = await prisma.user.findUnique({
+ where: { email: email.toLowerCase() },
+ });
 
-  if (existingUser) {
-    return { error: "An account with this email already exists." };
-  }
+ if (existingUser) {
+ return { error: "An account with this email already exists." };
+ }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+ const hashedPassword = await bcrypt.hash(password, 10);
 
-  await prisma.user.create({
-    data: {
-      email: email.toLowerCase(),
-      name,
-      password: hashedPassword,
-    },
-  });
+ await prisma.user.create({
+ data: {
+ email: email.toLowerCase(),
+ name,
+ password: hashedPassword,
+ },
+ });
 
-  // Redirect to sign-in so the user logs in with their new credentials
-  redirect("/auth/signin");
+ // Redirect to sign-in so the user logs in with their new credentials
+ redirect("/auth/signin");
 }
 
 export async function signInCredentialsAction(prevState: any, formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const callbackUrl = (formData.get("callbackUrl") as string) || "/dashboard";
+ const email = formData.get("email") as string;
+ const password = formData.get("password") as string;
+ const callbackUrl = (formData.get("callbackUrl") as string) || "/dashboard";
 
-  try {
-    await signIn("credentials", {
-      email: email.toLowerCase(),
-      password,
-      redirectTo: callbackUrl,
-    });
-  } catch (error) {
-    if (isRedirectError(error)) throw error; // propagate Next.js NEXT_REDIRECT
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return { error: "Invalid email or password." };
-        default:
-          return { error: "Something went wrong. Please try again." };
-      }
-    }
-    return { error: "Something went wrong. Please try again." };
-  }
+ try {
+ await signIn("credentials", {
+ email: email.toLowerCase(),
+ password,
+ redirectTo: callbackUrl,
+ });
+ } catch (error) {
+ if (isRedirectError(error)) throw error; // propagate Next.js NEXT_REDIRECT
+ if (error instanceof AuthError) {
+ switch (error.type) {
+ case "CredentialsSignin":
+ return { error: "Invalid email or password." };
+ default:
+ return { error: "Something went wrong. Please try again." };
+ }
+ }
+ return { error: "Something went wrong. Please try again." };
+ }
 
-  // Fallback redirect (only reached if signIn() returns without throwing)
-  redirect(callbackUrl);
+ // Fallback redirect (only reached if signIn() returns without throwing)
+ redirect(callbackUrl);
 }
 
 export async function signInMagicLinkAction(prevState: any, formData: FormData) {
-  const email = formData.get("email") as string;
-  const callbackUrl = (formData.get("callbackUrl") as string) || "/dashboard";
+ const email = formData.get("email") as string;
+ const callbackUrl = (formData.get("callbackUrl") as string) || "/dashboard";
 
-  if (!email) return { error: "Email is required." };
+ if (!email) return { error: "Email is required." };
 
-  try {
-    await signIn("nodemailer", { email: email.toLowerCase(), redirectTo: callbackUrl });
-  } catch (error) {
-    if (isRedirectError(error)) throw error;
-    if (error instanceof AuthError) {
-      return { error: "Failed to send magic link. Please try again." };
-    }
-    throw error;
-  }
+ try {
+ await signIn("nodemailer", { email: email.toLowerCase(), redirectTo: callbackUrl });
+ } catch (error) {
+ if (isRedirectError(error)) throw error;
+ if (error instanceof AuthError) {
+ return { error: "Failed to send magic link. Please try again." };
+ }
+ throw error;
+ }
 }
