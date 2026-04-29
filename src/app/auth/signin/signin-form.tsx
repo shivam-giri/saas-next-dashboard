@@ -10,7 +10,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
     const [magicState, magicAction, magicPending] = useActionState(signInMagicLinkAction, null);
 
     const inputCls =
-        "mt-1 block w-full px-3 py-2 border border-white/10 rounded-lg shadow-sm placeholder-slate-400 bg-[#1A1A2E] text-[#E5E7EB] focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg";
+        "mt-1 block w-full px-3 py-2 border border-white/40 rounded-lg shadow-sm placeholder-slate-400 bg-[#1A1A2E] text-[#E5E7EB] focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg";
 
     return (
         <div className="mt-8 space-y-6">
@@ -20,7 +20,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
                     type="button"
                     onClick={() => setMethod("credentials")}
                     className={`flex-1 py-2 text-lg font-medium rounded-md transition ${method === "credentials"
-                        ? "bg-[#1A1A2E] shadow text-[#E5E7EB] "
+                        ? "bg-[#3b3bba] shadow text-[#E5E7EB] "
                         : "text-[#9CA3AF] hover:text-[#E5E7EB] "
                         }`}
                 >
@@ -30,7 +30,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
                     type="button"
                     onClick={() => setMethod("magic-link")}
                     className={`flex-1 py-2 text-lg font-medium rounded-md transition ${method === "magic-link"
-                        ? "bg-[#1A1A2E] shadow text-[#E5E7EB] "
+                        ? "bg-[#3b3bba] shadow text-[#E5E7EB] "
                         : "text-[#9CA3AF] hover:text-[#E5E7EB] "
                         }`}
                 >
@@ -100,7 +100,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
                     <button
                         type="submit"
                         disabled={magicPending}
-                        className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-[#0F0F1A] hover:bg-[#1A1A2E] disabled:opacity-50 transition"
+                        className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-[linear-gradient(135deg,#8B5CF6,#22D3EE)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition"
                     >
                         {magicPending ? "Sending link…" : "Send Magic Link"}
                     </button>

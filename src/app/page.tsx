@@ -7,7 +7,7 @@ export default function Home() {
 
             {/* NAVBAR */}
             <header className="w-full flex items-center justify-between px-8 py-5 border-b border-zinc-200 ">
-                <h1 className="text-xl font-bold">SaaSify</h1>
+                <h1 className="text-xl font-bold text-purple-700">SaaSify</h1>
 
                 <Link
                     href="/dashboard"

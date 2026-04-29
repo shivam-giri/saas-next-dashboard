@@ -7,7 +7,7 @@ export function SignUpForm() {
     const [state, formAction, pending] = useActionState(signUpAction, null);
 
     const inputCls =
-        "mt-1 block w-full px-3 py-2 border border-white/10 rounded-lg shadow-sm placeholder-slate-400 bg-[#1A1A2E] text-[#E5E7EB] focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg";
+        "mt-1 block w-full px-3 py-2 border border-white/40 rounded-lg shadow-sm placeholder-slate-400 bg-[#1A1A2E] text-[#E5E7EB] focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg";
 
     const labelCls = "block text-lg font-medium text-[#E5E7EB] ";
 
