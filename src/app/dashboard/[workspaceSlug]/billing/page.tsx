@@ -34,7 +34,7 @@ export default async function BillingPage({
         <div className="flex flex-col h-full">
             <TopNav title="Billing & Plans" />
             <div className="max-w-4xl mx-auto space-y-8 p-4 md:p-8 w-full">
-                <h1 className="text-3xl font-bold tracking-tight text-[#1A1A2E]">Billing & Plans</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-purple-300">Billing & Plans</h1>
 
                 {/* Feature Gating Example inside the UI */}
                 {isPro ? (

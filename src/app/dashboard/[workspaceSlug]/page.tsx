@@ -22,7 +22,7 @@ export default async function WorkspaceDashboardPage({
         <div className="flex flex-col h-full">
             <TopNav title="Overview" />
             <div className="space-y-6 p-4 md:p-8">
-                <h1 className="text-3xl font-bold tracking-tight text-[#1A1A2E]">Dashboard Overview</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-purple-300">Dashboard Overview</h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Mock KPI Cards */}

@@ -54,8 +54,8 @@ export default async function TeamPage({
             <div className="max-w-5xl mx-auto space-y-8 p-4 md:p-8 w-full">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-[#1A1A2E]">Team Members</h1>
-                        <p className="text-[#445c86] mt-1 text-md">Manage who has access to {membership.workspace.name}.</p>
+                        <h1 className="text-3xl font-bold tracking-tight text-purple-300">Team Members</h1>
+                        <p className="text-slate-200 mt-1 text-lg">Manage who has access to {membership.workspace.name}.</p>
                     </div>
                 </div>
 

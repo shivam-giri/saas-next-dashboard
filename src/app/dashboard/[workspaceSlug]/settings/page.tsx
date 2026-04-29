@@ -41,8 +41,8 @@ export default async function SettingsPage({
             <TopNav title="Settings" />
             <div className="max-w-3xl mx-auto space-y-8 p-4 md:p-8 w-full">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-[#1A1A2E]">Workspace Settings</h1>
-                    <p className="text-[#445c86] mt-1 text-md">Manage {workspace.name}'s identity and dangerous configurations.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-purple-300">Workspace Settings</h1>
+                    <p className="text-slate-200 mt-1 text-lg">Manage {workspace.name}'s identity and dangerous configurations.</p>
                 </div>
 
                 <div className="bg-[#1A1A2E] border rounded-xl overflow-hidden shadow-sm">
@@ -100,7 +100,7 @@ export default async function SettingsPage({
                 {isAdmin && (
                     <div className="border border-red-200 rounded-xl overflow-hidden shadow-sm bg-red-50/30">
                         <div className="p-6">
-                            <h2 className="text-xl font-semibold text-red-600 mb-1">Danger Zone</h2>
+                            <h2 className="text-xl font-semibold text-red-500 mb-1">Danger Zone</h2>
                             <p className="text-lg text-[#9CA3AF] mb-6">Permanently delete this workspace and all of its associated data including members, subscriptions, and settings. This cannot be undone.</p>
 
                             <form action={boundDeleteAction} className="bg-[#1A1A2E] border border-red-100 p-5 rounded-lg space-y-4">
