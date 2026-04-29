@@ -1,5 +1,5 @@
 import { auth, signOut } from "@/lib/auth";
-
+import { PlanBadge } from "./plan-badge";
 
 type TopNavProps = {
     title: string;
@@ -21,15 +21,11 @@ export async function TopNav({ title }: TopNavProps) {
                     <p className="font-semibold leading-none">
                         {session?.user?.name}
                     </p>
-                    <p className="text-sm mt-1">
+                    <p className="text-sm mt-1 text-gray-400">
                         {session?.user?.email}
                     </p>
                 </div>
 
-                {/* Dark / Light toggle */}
-
-
-                {/* Sign out */}
                 <form
                     action={async () => {
                         "use server";
@@ -43,6 +39,9 @@ export async function TopNav({ title }: TopNavProps) {
                         Sign Out
                     </button>
                 </form>
+
+                {/* Plan Badge */}
+                <PlanBadge />
             </div>
         </header>
     );

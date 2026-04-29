@@ -82,7 +82,7 @@ export function Sidebar({
                     role="option"
                     aria-selected={isActive}
                     onClick={() => setSwitcherOpen(false)}
-                    className={`flex items-center gap-3 mx-1.5 px-3 py-2 rounded-lg text-sm transition-colors ${isActive
+                    className={`flex items-center gap-3 mx-1.5 px-3 py-2 rounded-lg text-lg transition-colors ${isActive
                       ? "bg-[#8B5CF6]/15 text-[#E5E7EB]"
                       : "hover:bg-white/5 text-[#9CA3AF] hover:text-[#E5E7EB]"
                       }`}
@@ -109,7 +109,7 @@ export function Sidebar({
               <Link
                 href="/onboarding"
                 onClick={() => setSwitcherOpen(false)}
-                className="flex items-center gap-3 mx-1.5 px-3 py-2 rounded-lg text-sm text-[#9CA3AF] hover:text-[#E5E7EB] hover:bg-white/5 transition-colors"
+                className="flex items-center gap-3 mx-1.5 px-3 py-2 rounded-lg text-lg text-[#9CA3AF] hover:text-[#E5E7EB] hover:bg-white/5 transition-colors"
               >
                 <div className="h-6 w-6 shrink-0 rounded-md border border-dashed border-white/20 flex items-center justify-center">
                   <Plus className="h-3.5 w-3.5" />

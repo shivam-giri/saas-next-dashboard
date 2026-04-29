@@ -1,7 +1,9 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { hasActiveSubscription } from "@/lib/stripe";
 import { redirect, notFound } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/sidebar";
+import { PlanBadgeProvider } from "@/components/dashboard/plan-badge-context";
 
 export default async function WorkspaceLayout({
   children,
@@ -55,21 +57,28 @@ export default async function WorkspaceLayout({
     slug: m.workspace.slug,
   }));
 
-  return (
-    <div className="flex h-screen bg-[#0F0F1A] overflow-hidden">
-      {/* Client Component Sidebar (Handles Active Routes via URL) */}
-      <Sidebar
-        workspaceName={membership.workspace.name}
-        workspaceSlug={resolvedParams.workspaceSlug}
-        role={membership.role}
-        allWorkspaces={allWorkspaces}
-      />
+  const isPro = hasActiveSubscription(
+    membership.workspace.stripeSubscriptionId,
+    membership.workspace.stripeCurrentPeriodEnd
+  );
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto overflow-x-hidden">
-          {children}
-        </main>
+  return (
+    <PlanBadgeProvider isPro={isPro}>
+      <div className="flex h-screen bg-[#0F0F1A] overflow-hidden">
+        {/* Client Component Sidebar (Handles Active Routes via URL) */}
+        <Sidebar
+          workspaceName={membership.workspace.name}
+          workspaceSlug={resolvedParams.workspaceSlug}
+          role={membership.role}
+          allWorkspaces={allWorkspaces}
+        />
+
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </PlanBadgeProvider>
   );
 }
