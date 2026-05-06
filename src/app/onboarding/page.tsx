@@ -1,11 +1,27 @@
 import { createWorkspaceAction } from "@/app/actions/workspace";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { hasActiveSubscription } from "@/lib/stripe";
 
 export default async function OnboardingPage() {
     const session = await auth();
     if (!session?.user) {
-        redirect("/api/auth/signin");
+        redirect("/auth/signin");
+    }
+
+    // Check workspace limit
+    const memberships = await prisma.workspaceMember.findMany({
+        where: { userId: session.user.id },
+        include: { workspace: true },
+        orderBy: { lastAccessedAt: "desc" },
+    });
+
+    if (memberships.length >= 3) {
+        const hasPro = memberships.some(m => hasActiveSubscription(m.workspace.stripeSubscriptionId, m.workspace.stripeCurrentPeriodEnd));
+        if (!hasPro) {
+            redirect(`/dashboard/${memberships[0].workspace.slug}/billing`);
+        }
     }
 
     return (

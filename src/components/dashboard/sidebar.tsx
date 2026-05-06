@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Settings, Users, CreditCard, ChevronDown, Plus, Check } from "lucide-react";
+import { LayoutDashboard, Settings, Users, CreditCard, ChevronDown, Plus, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { usePlan } from "./plan-badge-context";
 
 type WorkspaceEntry = {
   name: string;
@@ -23,6 +24,17 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [isNavigatingTo, setIsNavigatingTo] = useState<string | null>(null);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  const isPro = usePlan();
+
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setIsNavigatingTo(null);
+  }
+
+  const hasReachedLimit = !isPro && allWorkspaces.length >= 3;
+  const newWorkspaceHref = hasReachedLimit ? `/dashboard/${workspaceSlug}/billing` : "/onboarding";
 
   const navigation = [
     { name: "Overview", href: `/dashboard/${workspaceSlug}`, icon: LayoutDashboard },
@@ -49,16 +61,27 @@ export function Sidebar({
             {workspaceName.charAt(0).toUpperCase()}
           </div>
 
-          {/* Name */}
-          <span className="flex-1 text-left font-semibold text-[#E5E7EB] text-lg truncate">
-            {workspaceName}
-          </span>
+          {/* Name & Count */}
+          <div className="flex-1 text-left flex items-center justify-between min-w-0 pr-2">
+            <span className="font-semibold text-[#E5E7EB] text-lg truncate">
+              {workspaceName}
+            </span>
+            {allWorkspaces.length > 1 && (
+              <span className="text-md bg-[#8B5CF6]/20 text-purple-200 px-3 py-0.5 rounded-full font-bold ml-2 shrink-0">
+                {allWorkspaces.length}
+              </span>
+            )}
+          </div>
 
-          {/* Chevron */}
-          <ChevronDown
-            className={`h-4 w-4 text-[#9CA3AF] transition-transform duration-200 ${switcherOpen ? "rotate-180" : ""
-              }`}
-          />
+          {/* Chevron or Spinner */}
+          {isNavigatingTo ? (
+            <Loader2 className="h-4 w-4 text-[#9CA3AF] animate-spin" />
+          ) : (
+            <ChevronDown
+              className={`h-4 w-4 text-[#9CA3AF] transition-transform duration-200 ${switcherOpen ? "rotate-180" : ""
+                }`}
+            />
+          )}
         </button>
 
         {/* Dropdown panel */}
@@ -81,7 +104,12 @@ export function Sidebar({
                     href={`/dashboard/${ws.slug}`}
                     role="option"
                     aria-selected={isActive}
-                    onClick={() => setSwitcherOpen(false)}
+                    onClick={() => {
+                      if (!isActive) {
+                        setIsNavigatingTo(ws.slug);
+                      }
+                      setSwitcherOpen(false);
+                    }}
                     className={`flex items-center gap-3 mx-1.5 px-3 py-2 rounded-lg text-lg transition-colors ${isActive
                       ? "bg-[#8B5CF6]/15 text-[#E5E7EB]"
                       : "hover:bg-white/5 text-[#9CA3AF] hover:text-[#E5E7EB]"
@@ -107,14 +135,16 @@ export function Sidebar({
             {/* Divider + new workspace */}
             <div className="border-t border-white/30 py-1.5">
               <Link
-                href="/onboarding"
+                href={newWorkspaceHref}
                 onClick={() => setSwitcherOpen(false)}
                 className="flex items-center gap-3 mx-1.5 px-3 py-2 rounded-lg text-lg text-[#9CA3AF] hover:text-[#E5E7EB] hover:bg-white/5 transition-colors"
               >
                 <div className="h-6 w-6 shrink-0 rounded-md border border-dashed border-white/20 flex items-center justify-center">
                   <Plus className="h-3.5 w-3.5" />
                 </div>
-                <span className="font-medium">New Workspace</span>
+                <span className="font-medium">
+                  {hasReachedLimit ? "Upgrade to Add More" : "New Workspace"}
+                </span>
               </Link>
             </div>
           </div>
@@ -163,6 +193,16 @@ export function Sidebar({
           {role}
         </span>
       </div>
+
+      {/* ── Full Page Loading Overlay ── */}
+      {isNavigatingTo && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0F0F1A]/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <Loader2 className="h-40 w-40 text-[#8B5CF6] animate-spin mb-4" />
+          <h2 className="text-xl font-bold text-white tracking-wide">
+            Switching Workspace...
+          </h2>
+        </div>
+      )}
     </aside>
   );
 }

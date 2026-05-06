@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { hasActiveSubscription } from "@/lib/stripe";
 
 export async function createWorkspaceAction(formData: FormData) {
  const session = await auth();
@@ -14,6 +15,19 @@ export async function createWorkspaceAction(formData: FormData) {
  const workspaceName = formData.get("workspaceName") as string;
  if (!workspaceName || workspaceName.trim() === "") {
  throw new Error("Workspace name is required");
+ }
+
+ // Check workspace limit
+ const memberships = await prisma.workspaceMember.findMany({
+     where: { userId },
+     include: { workspace: true }
+ });
+
+ if (memberships.length >= 3) {
+     const hasPro = memberships.some(m => hasActiveSubscription(m.workspace.stripeSubscriptionId, m.workspace.stripeCurrentPeriodEnd));
+     if (!hasPro) {
+         throw new Error("Free Plan can add up to 3 workspaces. Please upgrade to Pro.");
+     }
  }
 
  // Auto-generate a URL-friendly slug (e.g. "My Startup" -> "my-startup")
