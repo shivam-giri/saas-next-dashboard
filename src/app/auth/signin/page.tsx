@@ -9,6 +9,8 @@ export default async function SignInPage({
 }) {
     const resolvedParams = await searchParams;
     const callbackUrl = (resolvedParams?.callbackUrl as string) || "/dashboard";
+    const passwordReset = resolvedParams?.reset === "success";
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0F0F1A] py-12 px-4 sm:px-6 lg:px-8">
@@ -31,6 +33,12 @@ export default async function SignInPage({
                 </div>
 
                 <SignInForm callbackUrl={callbackUrl} />
+
+                {passwordReset && (
+                    <div className="mt-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-300 text-center">
+                        ✓ Password updated successfully. Sign in with your new password.
+                    </div>
+                )}
 
                 <div className="mt-8">
                     <div className="relative">

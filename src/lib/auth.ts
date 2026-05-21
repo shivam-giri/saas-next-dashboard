@@ -22,11 +22,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
  return null;
  }
 
- const user = await prisma.user.findUnique({
+ let user;
+ try {
+ user = await prisma.user.findUnique({
  where: { email: credentials.email as string },
  });
+ } catch (error) {
+ console.error("Database connection error in authorize:", error);
+ throw error;
+ }
 
- if (!user || !user.password) {
+ if (!user) {
+ console.log("Login failed: Email not found in database.");
+ return null;
+ }
+
+ if (!user.password) {
+ console.log("Login failed: User signed up with OAuth, no password set.");
  return null;
  }
 
@@ -35,7 +47,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
  user.password
  );
 
- if (!isValid) return null;
+ if (!isValid) {
+ console.log("Login failed: Password mismatch.");
+ return null;
+ }
 
  return user;
  },

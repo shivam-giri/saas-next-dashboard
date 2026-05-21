@@ -151,3 +151,84 @@ export async function sendMagicLinkEmail(toEmail: string, url: string) {
  html,
  });
 }
+
+export async function sendPasswordResetEmail(toEmail: string, resetUrl: string) {
+ const html = `
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Reset your SaaSify password</title>
+ </head>
+ <body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;">
+ <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:40px 0;">
+ <tr>
+ <td align="center">
+ <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
+ <!-- Header -->
+ <tr>
+ <td style="background:linear-gradient(135deg,#6366f1 0%,#4f46e5 100%);padding:36px 40px;">
+ <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.3px;">
+ Reset your password
+ </h1>
+ </td>
+ </tr>
+ <!-- Body -->
+ <tr>
+ <td style="padding:36px 40px;">
+ <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;">
+ Hi there 👋
+ </p>
+ <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+ We received a request to reset the password for your <strong>SaaSify</strong> account
+ associated with this email address. Click the button below to choose a new password.
+ </p>
+ <!-- CTA Button -->
+ <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+ <tr>
+ <td style="border-radius:8px;background:linear-gradient(135deg,#6366f1 0%,#4f46e5 100%);">
+ <a href="${resetUrl}"
+ target="_blank"
+ style="display:inline-block;padding:14px 32px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;letter-spacing:0.1px;">
+ Reset Password →
+ </a>
+ </td>
+ </tr>
+ </table>
+ <p style="margin:0 0 8px;color:#6b7280;font-size:13px;line-height:1.5;">
+ Or copy and paste this link into your browser:
+ </p>
+ <p style="margin:0 0 28px;word-break:break-all;">
+ <a href="${resetUrl}" style="color:#6366f1;font-size:13px;">${resetUrl}</a>
+ </p>
+ <hr style="border:none;border-top:1px solid #e5e7eb;margin:0 0 24px;" />
+ <p style="margin:0;color:#9ca3af;font-size:12px;line-height:1.6;">
+ This link expires in <strong>1 hour</strong>. If you didn't request a password reset,
+ you can safely ignore this email — your password will not be changed.
+ </p>
+ </td>
+ </tr>
+ <!-- Footer -->
+ <tr>
+ <td style="background:#f9fafb;padding:20px 40px;border-top:1px solid #e5e7eb;">
+ <p style="margin:0;color:#9ca3af;font-size:12px;text-align:center;">
+ Sent by <strong>SaaSify</strong> · Password Reset Request
+ </p>
+ </td>
+ </tr>
+ </table>
+ </td>
+ </tr>
+ </table>
+ </body>
+ </html>
+ `;
+
+ await transporter.sendMail({
+ from: `"SaaSify" <${process.env.SMTP_USER}>`,
+ to: toEmail,
+ subject: "Reset your SaaSify password",
+ html,
+ });
+}

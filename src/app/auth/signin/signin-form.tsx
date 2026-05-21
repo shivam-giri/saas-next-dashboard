@@ -54,7 +54,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
                             <label htmlFor="password" className="block text-lg font-medium text-[#E5E7EB] ">
                                 Password
                             </label>
-                            <a href="#" className="text-sm font-medium text-[#22D3EE] hover:text-[#22D3EE]">
+                            <a href="/auth/forgot-password" className="text-sm font-medium text-[#22D3EE] hover:text-[#22D3EE] hover:underline transition">
                                 Forgot password?
                             </a>
                         </div>

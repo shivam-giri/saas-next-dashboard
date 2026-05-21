@@ -115,3 +115,14 @@ model WorkspaceInvitation {
   @@index([token])
   @@index([email, workspaceId])
 }
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique @default(cuid())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([email])
+}

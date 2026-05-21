@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Settings, Users, CreditCard, ChevronDown, Plus, Check, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { LayoutDashboard, Settings, Users, CreditCard, ChevronDown, Plus, Check, Loader2, Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
 import { usePlan } from "./plan-badge-context";
 
 type WorkspaceEntry = {
@@ -24,6 +24,7 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNavigatingTo, setIsNavigatingTo] = useState<string | null>(null);
   const [prevPathname, setPrevPathname] = useState(pathname);
   const isPro = usePlan();
@@ -31,6 +32,7 @@ export function Sidebar({
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
     setIsNavigatingTo(null);
+    setIsMobileMenuOpen(false); // Close mobile menu on navigate
   }
 
   const hasReachedLimit = !isPro && allWorkspaces.length >= 3;
@@ -43,11 +45,10 @@ export function Sidebar({
     { name: "Settings", href: `/dashboard/${workspaceSlug}/settings`, icon: Settings },
   ];
 
-  return (
-    <aside className="w-90 bg-[#0F0F1A] text-slate-300 flex-col hidden md:flex border-r border-white/30">
-
+  const sidebarContent = (
+    <>
       {/* ── Workspace Switcher ── */}
-      <div className="relative border-b border-white/30">
+      <div className="relative border-b border-white/30 shrink-0">
         <button
           id="workspace-switcher-btn"
           type="button"
@@ -92,7 +93,7 @@ export function Sidebar({
             className="absolute top-full left-0 right-0 z-50 mt-1 mx-2 bg-[#1A1A2E] rounded-xl border border-white/30 shadow-2xl shadow-black/40 overflow-hidden"
           >
             {/* Workspace list */}
-            <div className="py-1.5">
+            <div className="py-1.5 max-h-[50vh] overflow-y-auto">
               <p className="px-3 pb-1.5 text-xs font-semibold uppercase tracking-wider text-[#9CA3AF]">
                 Your Workspaces
               </p>
@@ -170,19 +171,19 @@ export function Sidebar({
                 }`}
             >
               <Icon
-                className={`mr-3 h-5 w-5 ${isActive
+                className={`mr-3 h-5 w-5 shrink-0 ${isActive
                   ? "text-[#8B5CF6]"
                   : "text-[#9CA3AF] group-hover:text-slate-300"
                   }`}
               />
-              <span className="font-medium">{item.name}</span>
+              <span className="font-medium truncate">{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
       {/* ── Footer Role Badge ── */}
-      <div className="p-4 border-t border-white/30 flex items-center justify-between">
+      <div className="p-4 border-t border-white/30 shrink-0 flex items-center justify-between">
         <span className="text-sm font-medium text-[#9CA3AF]">Access Level</span>
         <span
           className={`text-xs px-2.5 py-1 rounded-full font-bold ${role === "ADMIN"
@@ -193,16 +194,66 @@ export function Sidebar({
           {role}
         </span>
       </div>
+    </>
+  );
 
-      {/* ── Full Page Loading Overlay ── */}
+  return (
+    <>
+      {/* ── Mobile Top Header ── */}
+      <header className="md:hidden flex items-center justify-between bg-[#0F0F1A] border-b border-white/30 px-4 h-16 shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-8 w-8 shrink-0 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#22D3EE] flex items-center justify-center text-white text-sm font-bold shadow">
+            {workspaceName.charAt(0).toUpperCase()}
+          </div>
+          <span className="font-semibold text-[#E5E7EB] text-lg truncate">
+            {workspaceName}
+          </span>
+        </div>
+        <button
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="text-[#9CA3AF] hover:text-white transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      </header>
+
+      {/* ── Mobile Drawer Overlay ── */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in" 
+            onClick={() => setIsMobileMenuOpen(false)} 
+          >
+            {/* Close Button fixed at the top right of the screen */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="absolute top-4 right-4 z-50 p-2 text-white/70 hover:text-white bg-black/20 hover:bg-black/40 rounded-full backdrop-blur-md transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="relative w-[280px] max-w-[80vw] bg-[#0F0F1A] h-full flex flex-col border-r border-white/30 animate-in slide-in-from-left-full">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+
+      {/* ── Desktop Sidebar ── */}
+      <aside className="w-64 bg-[#0F0F1A] text-slate-300 flex-col hidden md:flex border-r border-white/30 shrink-0">
+        {sidebarContent}
+      </aside>
+
+      {/* Full Page Loading Overlay (shared) */}
       {isNavigatingTo && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0F0F1A]/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <Loader2 className="h-40 w-40 text-[#8B5CF6] animate-spin mb-4" />
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0F0F1A]/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <Loader2 className="h-16 w-16 text-[#8B5CF6] animate-spin mb-4" />
           <h2 className="text-xl font-bold text-white tracking-wide">
             Switching Workspace...
           </h2>
         </div>
       )}
-    </aside>
+    </>
   );
 }

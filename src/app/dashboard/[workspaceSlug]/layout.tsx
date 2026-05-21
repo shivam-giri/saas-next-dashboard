@@ -64,7 +64,7 @@ export default async function WorkspaceLayout({
 
   return (
     <PlanBadgeProvider isPro={isPro}>
-      <div className="flex h-screen bg-[#0F0F1A] overflow-hidden">
+      <div className="flex flex-col md:flex-row h-screen bg-[#0F0F1A] overflow-hidden">
         {/* Client Component Sidebar (Handles Active Routes via URL) */}
         <Sidebar
           workspaceName={membership.workspace.name}

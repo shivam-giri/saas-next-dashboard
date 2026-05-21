@@ -6,26 +6,26 @@ export default function Home() {
         <div className="min-h-screen flex flex-col bg-zinc-50 font-sans">
 
             {/* NAVBAR */}
-            <header className="w-full flex items-center justify-between px-8 py-5 border-b border-zinc-200 ">
+            <header className="w-full flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 border-b border-zinc-200 ">
                 <h1 className="text-xl font-bold text-purple-700">SaaSify</h1>
 
                 <Link
                     href="/dashboard"
-                    className="px-5 py-2 rounded-full bg-black text-white text-lg font-medium hover:opacity-80 transition"
+                    className="px-4 sm:px-5 py-2 rounded-full bg-black text-white text-base sm:text-lg font-medium hover:opacity-80 transition"
                 >
                     Go to Dashboard →
                 </Link>
             </header>
 
             {/* HERO */}
-            <main className="flex flex-1 flex-col items-center justify-center text-center px-6">
+            <main className="flex flex-1 flex-col items-center justify-center text-center px-4 sm:px-6 py-12">
                 <div className="max-w-3xl flex flex-col items-center gap-6">
 
-                    <h1 className="text-5xl font-bold tracking-tight text-black leading-tight">
-                        Build & Manage Your SaaS <br /> Faster Than Ever 🚀
+                    <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-black leading-tight">
+                        Build & Manage Your SaaS <br className="hidden sm:block" /> Faster Than Ever 🚀
                     </h1>
 
-                    <p className="text-lg text-zinc-600 max-w-xl">
+                    <p className="text-base sm:text-lg text-zinc-600 max-w-xl">
                         A modern dashboard to manage users, analytics, billing, and more —
                         all in one place.
                     </p>
@@ -33,14 +33,14 @@ export default function Home() {
                     {/* BIG CTA BUTTON */}
                     <Link
                         href="/dashboard"
-                        className="mt-6 px-10 py-4 text-lg font-semibold rounded-full bg-black text-white hover:scale-105 transition-transform shadow-lg"
+                        className="mt-4 sm:mt-6 px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-full bg-black text-white hover:scale-105 transition-transform shadow-lg"
                     >
                         Open Dashboard →
                     </Link>
                 </div>
 
                 {/* FEATURE CARDS */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-20 max-w-5xl w-full">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-16 sm:mt-20 max-w-5xl w-full">
 
                     <div className="p-6 rounded-2xl bg-[#1A1A2E] shadow hover:shadow-lg transition">
                         <h3 className="text-lg font-semibold mb-2 text-white">Analytics</h3>
