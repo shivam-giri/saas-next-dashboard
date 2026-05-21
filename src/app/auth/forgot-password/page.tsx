@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 {/* Success state */}
-                {state?.success ? (
+                {state && 'success' in state && state.success ? (
                     <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-5 text-center space-y-3">
                         <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto">
                             <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
                             />
                         </div>
 
-                        {state?.error && (
+                        {state && 'error' in state && state.error && (
                             <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 py-2.5 px-3.5 rounded-lg">
                                 {state.error}
                             </div>
