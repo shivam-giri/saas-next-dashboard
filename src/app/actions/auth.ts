@@ -13,6 +13,7 @@ export async function signUpAction(prevState: any, formData: FormData) {
  const password = formData.get("password") as string;
  const confirmPassword = formData.get("confirmPassword") as string;
  const name = formData.get("name") as string;
+ const callbackUrl = (formData.get("callbackUrl") as string) || "/dashboard";
 
  if (!email || !password || !name) {
  return { error: "Name, email, and password are required." };
@@ -45,7 +46,10 @@ export async function signUpAction(prevState: any, formData: FormData) {
  });
 
  // Redirect to sign-in so the user logs in with their new credentials
- redirect("/auth/signin");
+ const signInUrl = callbackUrl !== "/dashboard" 
+  ? `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}` 
+  : "/auth/signin";
+ redirect(signInUrl);
 }
 
 export async function signInCredentialsAction(prevState: any, formData: FormData) {

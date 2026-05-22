@@ -9,7 +9,11 @@ export async function TopNav({ title }: TopNavProps) {
     const session = await auth();
 
     return (
-        <header className="h-16 border-b bg-[#1A1A2E] flex items-center justify-between p-12 shadow-sm z-10">
+        <header className="border-b bg-[#1A1A2E] p-6 pt-14 shadow-sm z-10 relative">
+        
+            {/* Plan Badge */}
+            <PlanBadge />
+            <div className="flex items-center justify-between">
             <div className="flex items-center">
                 <h2 className="text-xl font-bold tracking-tight">
                     {title}
@@ -34,14 +38,13 @@ export async function TopNav({ title }: TopNavProps) {
                 >
                     <button
                         type="submit"
-                        className="text-lg font-medium text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md transition-colors"
+                        className="cursor-pointer text-lg font-medium text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md transition-colors"
                     >
                         Sign Out
                     </button>
                 </form>
 
-                {/* Plan Badge */}
-                <PlanBadge />
+            </div>
             </div>
         </header>
     );

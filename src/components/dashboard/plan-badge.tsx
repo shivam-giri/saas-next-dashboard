@@ -7,7 +7,7 @@ export function PlanBadge() {
 
   return (
     <div
-      className={`px-3 py-1.5 rounded-md text-sm font-bold tracking-wide uppercase shadow-sm border ${
+      className={`p-1.5 w-32 absolute top-3 right-3 text-center rounded-md text-xs font-bold tracking-wide uppercase shadow-sm border ${
         isPro
           ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-500/50"
           : "bg-gray-800 text-gray-300 border-gray-700"

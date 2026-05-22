@@ -24,7 +24,7 @@ export default async function SignInPage({
                     <p className="mt-2 text-center text-lg text-[#9CA3AF] ">
                         Don&apos;t have an account?{" "}
                         <Link
-                            href="/auth/signup"
+                            href={callbackUrl !== "/dashboard" ? `/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/auth/signup"}
                             className="font-semibold text-[#22D3EE] hover:text-[#22D3EE] transition"
                         >
                             Sign up

@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { SignUpForm } from "./signup-form";
 
-export default function SignUpPage() {
+export default async function SignUpPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+    const resolvedParams = await searchParams;
+    const callbackUrl = (resolvedParams?.callbackUrl as string) || "/dashboard";
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0F0F1A] py-12 px-4 sm:px-6 lg:px-8">
 
@@ -14,7 +21,7 @@ export default function SignUpPage() {
                     <p className="mt-2 text-center text-lg text-[#9CA3AF] ">
                         Already have an account?{" "}
                         <Link
-                            href="/auth/signin"
+                            href={callbackUrl !== "/dashboard" ? `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/auth/signin"}
                             className="font-semibold text-[#22D3EE] hover:text-[#22D3EE] transition"
                         >
                             Sign in
@@ -22,7 +29,7 @@ export default function SignUpPage() {
                     </p>
                 </div>
 
-                <SignUpForm />
+                <SignUpForm callbackUrl={callbackUrl} />
             </div>
         </div>
     );

@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { signUpAction } from "@/app/actions/auth";
 
-export function SignUpForm() {
+export function SignUpForm({ callbackUrl = "/dashboard" }: { callbackUrl?: string }) {
     const [state, formAction, pending] = useActionState(signUpAction, null);
 
     const inputCls =
@@ -13,6 +13,7 @@ export function SignUpForm() {
 
     return (
         <form action={formAction} className="mt-8 space-y-5">
+            <input type="hidden" name="callbackUrl" value={callbackUrl} />
             <div>
                 <label htmlFor="name" className={labelCls}>Full Name</label>
                 <input id="name" name="name" type="text" required className={inputCls} placeholder="Jane Doe" />
