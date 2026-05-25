@@ -31,6 +31,7 @@ model User {
   sessions             Session[]
   memberships          WorkspaceMember[]
   sentInvitations      WorkspaceInvitation[]
+  createdDocuments     ContentDocument[]
 }
 
 model Account {
@@ -81,6 +82,9 @@ model Workspace {
 
   members     WorkspaceMember[]
   invitations WorkspaceInvitation[]
+  brandVoice  BrandVoice?
+  campaigns   Campaign[]
+  documents   ContentDocument[]
 }
 
 model WorkspaceMember {
@@ -125,4 +129,71 @@ model PasswordResetToken {
 
   @@index([token])
   @@index([email])
+}
+
+model BrandVoice {
+  id              String    @id @default(cuid())
+  workspaceId     String    @unique
+  tone            String?   @db.Text
+  targetAudience  String?   @db.Text
+  doNotUseWords   String?   @db.Text
+  coreValues      String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+enum CampaignStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Campaign {
+  id              String    @id @default(cuid())
+  workspaceId     String
+  name            String
+  topic           String    @db.Text
+  status          CampaignStatus @default(DRAFT)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  documents       ContentDocument[]
+
+  @@index([workspaceId])
+}
+
+enum ContentType {
+  BLOG
+  TWEET
+  LINKEDIN
+  EMAIL
+}
+
+enum DocumentStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+}
+
+model ContentDocument {
+  id              String    @id @default(cuid())
+  campaignId      String
+  workspaceId     String
+  title           String
+  content         String    @db.Text
+  type            ContentType
+  status          DocumentStatus @default(DRAFT)
+  createdById     String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  campaign        Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([workspaceId])
 }

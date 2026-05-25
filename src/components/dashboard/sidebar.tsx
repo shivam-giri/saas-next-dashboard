@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Settings, Users, CreditCard, ChevronDown, Plus, Check, Loader2, Menu, X } from "lucide-react";
+import { LayoutDashboard, Settings, Users, CreditCard, ChevronDown, Plus, Check, Loader2, Menu, X, Brain, Megaphone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePlan } from "./plan-badge-context";
 
@@ -40,6 +40,8 @@ export function Sidebar({
 
   const navigation = [
     { name: "Overview", href: `/dashboard/${workspaceSlug}`, icon: LayoutDashboard },
+    { name: "Content Campaigns", href: `/dashboard/${workspaceSlug}/campaigns`, icon: Megaphone },
+    { name: "Brand Voice", href: `/dashboard/${workspaceSlug}/brand`, icon: Brain },
     { name: "Team Members", href: `/dashboard/${workspaceSlug}/team`, icon: Users },
     { name: "Billing", href: `/dashboard/${workspaceSlug}/billing`, icon: CreditCard },
     { name: "Settings", href: `/dashboard/${workspaceSlug}/settings`, icon: Settings },
@@ -58,7 +60,7 @@ export function Sidebar({
           aria-expanded={switcherOpen}
         >
           {/* Avatar */}
-          <div className="h-8 w-8 shrink-0 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#22D3EE] flex items-center justify-center text-white text-sm font-bold shadow">
+          <div className="h-8 w-8 shrink-0 rounded-lg bg-linear-to-br from-[#8B5CF6] to-[#22D3EE] flex items-center justify-center text-white text-sm font-bold shadow">
             {workspaceName.charAt(0).toUpperCase()}
           </div>
 
@@ -118,7 +120,7 @@ export function Sidebar({
                   >
                     <div
                       className={`h-6 w-6 shrink-0 rounded-md flex items-center justify-center text-white text-md font-bold ${isActive
-                        ? "bg-gradient-to-br from-[#8B5CF6] to-[#22D3EE]"
+                        ? "bg-linear-to-br from-[#8B5CF6] to-[#22D3EE]"
                         : "bg-[#2a2a45]"
                         }`}
                     >
@@ -202,7 +204,7 @@ export function Sidebar({
       {/* ── Mobile Top Header ── */}
       <header className="md:hidden flex items-center justify-between bg-[#0F0F1A] border-b border-white/30 px-4 h-16 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="h-8 w-8 shrink-0 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#22D3EE] flex items-center justify-center text-white text-sm font-bold shadow">
+          <div className="h-8 w-8 shrink-0 rounded-lg bg-linear-to-br from-[#8B5CF6] to-[#22D3EE] flex items-center justify-center text-white text-sm font-bold shadow">
             {workspaceName.charAt(0).toUpperCase()}
           </div>
           <span className="font-semibold text-[#E5E7EB] text-lg truncate">
@@ -234,7 +236,7 @@ export function Sidebar({
               <X className="w-6 h-6" />
             </button>
           </div>
-          <div className="relative w-[280px] max-w-[80vw] bg-[#0F0F1A] h-full flex flex-col border-r border-white/30 animate-in slide-in-from-left-full">
+          <div className="relative w-70 max-w-[80vw] bg-[#0F0F1A] h-full flex flex-col border-r border-white/30 animate-in slide-in-from-left-full">
             {sidebarContent}
           </div>
         </div>
@@ -247,7 +249,7 @@ export function Sidebar({
 
       {/* Full Page Loading Overlay (shared) */}
       {isNavigatingTo && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0F0F1A]/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-[#0F0F1A]/80 backdrop-blur-sm animate-in fade-in duration-200">
           <Loader2 className="h-16 w-16 text-[#8B5CF6] animate-spin mb-4" />
           <h2 className="text-xl font-bold text-white tracking-wide">
             Switching Workspace...

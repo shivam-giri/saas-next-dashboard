@@ -11,7 +11,7 @@ const PROTECTED_PREFIXES = ["/dashboard", "/onboarding"];
 // Routes that authenticated users should NOT be able to visit
 const AUTH_ROUTES = ["/auth/signin", "/auth/signup"];
 
-export default auth((req: NextRequest & { auth: any }) => {
+export const proxy = auth((req: NextRequest & { auth: any }) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
   const pathname = nextUrl.pathname;
