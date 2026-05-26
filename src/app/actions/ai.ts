@@ -39,8 +39,10 @@ export async function createCampaignAction(workspaceId: string, formData: FormDa
 
   const name = formData.get("name") as string;
   const topic = formData.get("topic") as string;
+  const selectedTypes = formData.getAll("types") as string[];
   
   if (!name || !topic) return { error: "Name and topic are required." };
+  if (!selectedTypes || selectedTypes.length === 0) return { error: "Please select at least one content type." };
 
   const membership = await prisma.workspaceMember.findUnique({
     where: { userId_workspaceId: { userId: session.user.id, workspaceId } },
@@ -64,11 +66,8 @@ export async function createCampaignAction(workspaceId: string, formData: FormDa
   try {
     // 2. Generate Content asynchronously
     // In a production app, we would use a background job (like Inngest/BullMQ).
-    // Here we generate it sequentially or in parallel during the server action.
-    const types = ["BLOG", "TWEET", "LINKEDIN", "EMAIL"] as const;
-    
-    // Run all generations in parallel
-    const generationPromises = types.map(async (type) => {
+    // Run all generations in parallel based on selected types
+    const generationPromises = selectedTypes.map(async (type) => {
       const generatedText = await generateContent({
         topic,
         type,
@@ -130,5 +129,91 @@ export async function updateDocumentStatusAction(
   });
 
   revalidatePath(`/dashboard/[workspaceSlug]/campaigns/[campaignId]`, "page");
+  return { success: true };
+}
+
+export async function updateDocumentContentAction(
+  documentId: string,
+  content: string,
+  workspaceId: string
+) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Unauthorized" };
+
+  const document = await prisma.contentDocument.findUnique({
+    where: { id: documentId },
+  });
+
+  if (!document) return { error: "Document not found" };
+
+  // Strict check: Only the user who generated it can edit it
+  if (document.createdById !== session.user.id) {
+    return { error: "Only the creator of this draft can edit it." };
+  }
+
+  if (document.status !== "DRAFT") {
+    return { error: "Only DRAFT documents can be edited." };
+  }
+
+  await prisma.contentDocument.update({
+    where: { id: documentId },
+    data: { content },
+  });
+
+  revalidatePath(`/dashboard/[workspaceSlug]/campaigns/[campaignId]`, "page");
+  return { success: true };
+}
+
+export async function deleteDocumentAction(
+  documentId: string,
+  workspaceId: string
+) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Unauthorized" };
+
+  const document = await prisma.contentDocument.findUnique({
+    where: { id: documentId },
+  });
+
+  if (!document) return { error: "Document not found" };
+
+  // Strict check: Only the user who generated it can delete it
+  if (document.createdById !== session.user.id) {
+    return { error: "Only the creator of this draft can delete it." };
+  }
+
+  await prisma.contentDocument.delete({
+    where: { id: documentId },
+  });
+
+  revalidatePath(`/dashboard/[workspaceSlug]/campaigns/[campaignId]`, "page");
+  return { success: true };
+}
+
+export async function deleteCampaignAction(campaignId: string, workspaceId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Unauthorized" };
+
+  const membership = await prisma.workspaceMember.findUnique({
+    where: { userId_workspaceId: { userId: session.user.id, workspaceId } },
+  });
+
+  if (!membership || membership.role !== "ADMIN") {
+    return { error: "Only admins can delete campaigns." };
+  }
+
+  const campaign = await prisma.campaign.findUnique({
+    where: { id: campaignId },
+  });
+
+  if (!campaign || campaign.workspaceId !== workspaceId) {
+    return { error: "Campaign not found" };
+  }
+
+  await prisma.campaign.delete({
+    where: { id: campaignId },
+  });
+
+  revalidatePath(`/dashboard/[workspaceSlug]/campaigns`, "page");
   return { success: true };
 }

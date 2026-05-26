@@ -1,22 +1,49 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X, Loader2, Sparkles } from "lucide-react";
+import { Plus, X, Loader2, Sparkles, Check } from "lucide-react";
 import { createCampaignAction } from "@/app/actions/ai";
 import { useRouter } from "next/navigation";
+
+const CONTENT_TYPES = [
+  { id: "BLOG", label: "Blog Post" },
+  { id: "TWEET", label: "Twitter Thread" },
+  { id: "LINKEDIN", label: "LinkedIn Post" },
+  { id: "EMAIL", label: "Newsletter" }
+];
 
 export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: string, workspaceSlug: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Default to all selected
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(CONTENT_TYPES.map(t => t.id));
+  
   const router = useRouter();
+
+  const toggleType = (id: string) => {
+    setSelectedTypes(prev => 
+      prev.includes(id) 
+        ? prev.filter(t => t !== id)
+        : [...prev, id]
+    );
+  };
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (selectedTypes.length === 0) {
+      setError("Please select at least one content type to generate.");
+      return;
+    }
+    
     setLoading(true);
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+    // Append the selected types array to formData
+    selectedTypes.forEach(type => formData.append("types", type));
+
     const result = await createCampaignAction(workspaceId, formData);
 
     if (result.error) {
@@ -25,10 +52,6 @@ export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: 
     } else if (result.campaignId) {
       setIsOpen(false);
       router.push(`/dashboard/${workspaceSlug}/campaigns/${result.campaignId}`);
-      // Note: workspaceSlug vs workspaceId might be different if slug is used in URL.
-      // We will assume a hard refresh or use router.push carefully.
-      // Wait, the router push should go to the current path + /campaignId.
-      // A better way: just refresh and let the user click it, or construct the URL safely.
     }
   }
 
@@ -62,11 +85,11 @@ export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: 
                 Generate Campaign <Sparkles className="w-5 h-5 text-[#8B5CF6]" />
               </h2>
               <p className="text-[#9CA3AF] text-sm">
-                Describe your topic, and our AI will automatically draft a blog post, social media threads, and emails perfectly aligned with your brand voice.
+                Describe your topic, select the formats you need, and our AI will automatically draft them aligned with your brand voice.
               </p>
             </div>
 
-            <form onSubmit={onSubmit} className="space-y-4">
+            <form onSubmit={onSubmit} className="space-y-5">
               {error && (
                 <div className="p-3 bg-red-500/10 border border-red-500/50 text-red-200 rounded-lg text-sm">
                   {error}
@@ -94,13 +117,42 @@ export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: 
                   name="topic"
                   required
                   disabled={loading}
-                  rows={4}
-                  placeholder="e.g., We are launching a new dark mode feature that saves battery life and reduces eye strain. It will be available for all Pro users starting next week."
+                  rows={3}
+                  placeholder="e.g., We are launching a new dark mode feature that saves battery life and reduces eye strain."
                   className="w-full bg-[#0F0F1A] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] disabled:opacity-50 resize-none"
                 />
               </div>
 
-              <div className="pt-4 flex justify-end gap-3">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  What should the AI generate?
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {CONTENT_TYPES.map(type => {
+                    const isSelected = selectedTypes.includes(type.id);
+                    return (
+                      <button
+                        key={type.id}
+                        type="button"
+                        onClick={() => toggleType(type.id)}
+                        disabled={loading}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                          isSelected 
+                            ? "bg-[#8B5CF6]/20 text-[#A78BFA] border border-[#8B5CF6]/30" 
+                            : "bg-[#0F0F1A] text-slate-400 border border-white/10 hover:border-white/20 hover:text-slate-300"
+                        } disabled:opacity-50`}
+                      >
+                        <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? "border-[#A78BFA] bg-[#8B5CF6]" : "border-slate-500"}`}>
+                          {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                        </div>
+                        {type.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-end gap-3 border-t border-white/5">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
@@ -111,13 +163,13 @@ export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: 
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || selectedTypes.length === 0}
                   className="flex items-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Generating Content...
+                      Generating...
                     </>
                   ) : (
                     "Generate Magic"

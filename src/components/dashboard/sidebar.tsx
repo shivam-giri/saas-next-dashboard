@@ -243,7 +243,7 @@ export function Sidebar({
       )}
 
       {/* ── Desktop Sidebar ── */}
-      <aside className="w-64 bg-[#0F0F1A] text-slate-300 flex-col hidden md:flex border-r border-white/30 shrink-0">
+      <aside className="w-72 bg-[#0F0F1A] text-slate-300 flex-col hidden md:flex border-r border-white/30 shrink-0">
         {sidebarContent}
       </aside>
 

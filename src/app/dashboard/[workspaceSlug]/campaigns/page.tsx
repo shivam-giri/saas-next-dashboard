@@ -4,6 +4,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { Plus, LayoutTemplate, FileText, ArrowRight } from "lucide-react";
 import { NewCampaignModal } from "./new-campaign-modal";
+import { DeleteCampaignButton } from "./delete-campaign-button";
 import { formatDistanceToNow } from "date-fns";
 
 export default async function CampaignsPage({
@@ -29,6 +30,8 @@ export default async function CampaignsPage({
   });
 
   if (!workspace || workspace.members.length === 0) return notFound();
+
+  const isAdmin = workspace.members[0].role === "ADMIN";
 
   return (
     <div className="p-8 max-w-6xl mx-auto animate-in fade-in zoom-in-95 duration-300">
@@ -63,13 +66,18 @@ export default async function CampaignsPage({
                 <div className="flex-1 min-w-0 pr-4">
                   <h3 className="text-xl font-semibold text-white truncate group-hover:text-[#8B5CF6] transition-colors">{campaign.name}</h3>
                 </div>
-                <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                  campaign.status === "COMPLETED" ? "bg-emerald-500/10 text-emerald-400" :
-                  campaign.status === "IN_PROGRESS" ? "bg-blue-500/10 text-blue-400" :
-                  "bg-white/10 text-[#9CA3AF]"
-                }`}>
-                  {campaign.status}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                    campaign.status === "COMPLETED" ? "bg-emerald-500/10 text-emerald-400" :
+                    campaign.status === "IN_PROGRESS" ? "bg-blue-500/10 text-blue-400" :
+                    "bg-white/10 text-[#9CA3AF]"
+                  }`}>
+                    {campaign.status}
+                  </span>
+                  {isAdmin && (
+                    <DeleteCampaignButton campaignId={campaign.id} workspaceId={workspace.id} />
+                  )}
+                </div>
               </div>
               
               <p className="text-sm text-[#9CA3AF] line-clamp-2 mb-6 flex-1">

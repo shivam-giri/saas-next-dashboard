@@ -67,6 +67,7 @@ export default async function CampaignDetailsPage({
             document={doc} 
             isAdmin={isAdmin}
             workspaceId={campaign.workspaceId}
+            currentUserId={session.user.id}
           />
         ))}
       </div>
