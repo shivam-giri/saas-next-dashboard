@@ -3,7 +3,7 @@
 import { usePlan } from "./plan-badge-context";
 
 export function PlanBadge() {
-  const isPro = usePlan();
+  const { isPro } = usePlan();
 
   return (
     <div

@@ -50,6 +50,14 @@ export async function createCampaignAction(workspaceId: string, formData: FormDa
 
   if (!membership) return { error: "Unauthorized" };
 
+  const workspace = await prisma.workspace.findUnique({ where: { id: workspaceId } });
+  if (!workspace) return { error: "Workspace not found" };
+
+  const cost = selectedTypes.length;
+  if (workspace.creditsRemaining < cost) {
+    return { error: `Insufficient credits. You need ${cost} credits but have ${workspace.creditsRemaining}. Please upgrade to Pro.` };
+  }
+
   // Fetch the Brand Voice
   const brandVoice = await prisma.brandVoice.findUnique({ where: { workspaceId } });
 
@@ -94,6 +102,12 @@ export async function createCampaignAction(workspaceId: string, formData: FormDa
     await prisma.campaign.update({
       where: { id: campaign.id },
       data: { status: "COMPLETED" },
+    });
+
+    // Deduct credits
+    await prisma.workspace.update({
+      where: { id: workspaceId },
+      data: { creditsRemaining: { decrement: cost } },
     });
 
   } catch (err) {

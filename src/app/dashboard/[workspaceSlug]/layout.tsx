@@ -63,7 +63,7 @@ export default async function WorkspaceLayout({
   );
 
   return (
-    <PlanBadgeProvider isPro={isPro}>
+    <PlanBadgeProvider isPro={isPro} creditsRemaining={membership.workspace.creditsRemaining}>
       <div className="flex flex-col md:flex-row h-screen bg-[#0F0F1A] overflow-hidden">
         {/* Client Component Sidebar (Handles Active Routes via URL) */}
         <Sidebar

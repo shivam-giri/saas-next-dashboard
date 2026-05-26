@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Plus, X, Loader2, Sparkles, Check } from "lucide-react";
 import { createCampaignAction } from "@/app/actions/ai";
 import { useRouter } from "next/navigation";
+import { usePlan } from "@/components/dashboard/plan-badge-context";
+import Link from "next/link";
 
 const CONTENT_TYPES = [
   { id: "BLOG", label: "Blog Post" },
@@ -21,6 +23,9 @@ export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: 
   const [selectedTypes, setSelectedTypes] = useState<string[]>(CONTENT_TYPES.map(t => t.id));
   
   const router = useRouter();
+  const { creditsRemaining } = usePlan();
+  
+  const insufficientCredits = creditsRemaining < selectedTypes.length;
 
   const toggleType = (id: string) => {
     setSelectedTypes(prev => 
@@ -151,6 +156,15 @@ export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: 
                   })}
                 </div>
               </div>
+              
+              {insufficientCredits && (
+                <div className="p-3 bg-yellow-500/10 border border-yellow-500/50 text-yellow-200 rounded-lg text-sm flex items-center justify-between">
+                  <span>Not enough credits to generate {selectedTypes.length} assets.</span>
+                  <Link href={`/dashboard/${workspaceSlug}/billing`} className="font-semibold text-yellow-400 hover:underline">
+                    Upgrade to Pro
+                  </Link>
+                </div>
+              )}
 
               <div className="pt-2 flex justify-end gap-3 border-t border-white/5">
                 <button
@@ -163,7 +177,7 @@ export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: 
                 </button>
                 <button
                   type="submit"
-                  disabled={loading || selectedTypes.length === 0}
+                  disabled={loading || selectedTypes.length === 0 || insufficientCredits}
                   className="flex items-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50"
                 >
                   {loading ? (

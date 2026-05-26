@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/lib/auth";
 import { PlanBadge } from "./plan-badge";
+import { CreditsBadge } from "./credits-badge";
 
 type TopNavProps = {
     title: string;
@@ -13,6 +14,7 @@ export async function TopNav({ title }: TopNavProps) {
         
             {/* Plan Badge */}
             <PlanBadge />
+            <CreditsBadge />
             <div className="flex items-center justify-between">
             <div className="flex items-center">
                 <h2 className="text-xl font-bold tracking-tight">
