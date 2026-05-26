@@ -67,7 +67,8 @@ export async function createCampaignAction(workspaceId: string, formData: FormDa
     // 2. Generate Content asynchronously
     // In a production app, we would use a background job (like Inngest/BullMQ).
     // Run all generations in parallel based on selected types
-    const generationPromises = selectedTypes.map(async (type) => {
+    const generationPromises = selectedTypes.map(async (typeStr) => {
+      const type = typeStr as "BLOG" | "TWEET" | "LINKEDIN" | "EMAIL";
       const generatedText = await generateContent({
         topic,
         type,
