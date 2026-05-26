@@ -61,20 +61,8 @@ export async function createCampaignAction(workspaceId: string, formData: FormDa
   // Fetch the Brand Voice
   const brandVoice = await prisma.brandVoice.findUnique({ where: { workspaceId } });
 
-  // 1. Create the Campaign Record
-  const campaign = await prisma.campaign.create({
-    data: {
-      workspaceId,
-      name,
-      topic,
-      status: "IN_PROGRESS",
-    },
-  });
-
   try {
-    // 2. Generate Content asynchronously
-    // In a production app, we would use a background job (like Inngest/BullMQ).
-    // Run all generations in parallel based on selected types
+    // 1. Generate Content asynchronously in memory first to prevent dangling campaigns
     const generationPromises = selectedTypes.map(async (typeStr) => {
       const type = typeStr as "BLOG" | "TWEET" | "LINKEDIN" | "EMAIL";
       const generatedText = await generateContent({
@@ -83,40 +71,56 @@ export async function createCampaignAction(workspaceId: string, formData: FormDa
         brandVoice,
       });
 
-      return prisma.contentDocument.create({
+      return { type, text: generatedText };
+    });
+
+    const generatedResults = await Promise.all(generationPromises);
+
+    // 2. If successful, create the Campaign and Documents
+    const campaign = await prisma.campaign.create({
+      data: {
+        workspaceId,
+        name,
+        topic,
+        status: "COMPLETED", // Can skip IN_PROGRESS since we generate synchronously
+      },
+    });
+
+    const documentPromises = generatedResults.map((result) => 
+      prisma.contentDocument.create({
         data: {
           campaignId: campaign.id,
           workspaceId,
-          title: `${type} Draft`,
-          content: generatedText,
-          type: type,
+          title: `${result.type} Draft`,
+          content: result.text,
+          type: result.type,
           status: "DRAFT",
           createdById: session.user.id,
         },
-      });
-    });
+      })
+    );
 
-    await Promise.all(generationPromises);
+    await Promise.all(documentPromises);
 
-    // Update campaign status
-    await prisma.campaign.update({
-      where: { id: campaign.id },
-      data: { status: "COMPLETED" },
-    });
-
-    // Deduct credits
+    // 3. Deduct credits
     await prisma.workspace.update({
       where: { id: workspaceId },
       data: { creditsRemaining: { decrement: cost } },
     });
 
-  } catch (err) {
-    console.error("Campaign generation failed:", err);
-    return { error: "Failed to generate some or all content." };
-  }
+    revalidatePath(`/dashboard/[workspaceSlug]/campaigns`, "page");
+    return { success: true, campaignId: campaign.id };
 
-  revalidatePath(`/dashboard/[workspaceSlug]/campaigns`, "page");
-  return { success: true, campaignId: campaign.id };
+  } catch (err: any) {
+    console.error("Campaign generation failed:", err);
+    
+    // Check if it's a rate limit error (429)
+    if (err.message?.includes("429") || err.message?.includes("quota")) {
+      return { error: "AI API Rate Limit exceeded. Please try generating fewer formats at once." };
+    }
+
+    return { error: "Failed to generate AI content. Please try again." };
+  }
 }
 
 export async function updateDocumentStatusAction(
