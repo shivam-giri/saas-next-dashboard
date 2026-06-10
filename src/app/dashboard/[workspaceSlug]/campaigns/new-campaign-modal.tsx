@@ -64,7 +64,7 @@ export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: 
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-5 py-2.5 rounded-full font-medium transition-colors shadow-lg hover:shadow-[#8B5CF6]/20"
+        className="mx-auto flex items-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-5 py-2.5 rounded-full font-medium transition-colors shadow-lg hover:shadow-[#8B5CF6]/20"
       >
         <Plus className="w-5 h-5" />
         New Campaign
@@ -178,7 +178,7 @@ export function NewCampaignModal({ workspaceId, workspaceSlug }: { workspaceId: 
                 <button
                   type="submit"
                   disabled={loading || selectedTypes.length === 0 || insufficientCredits}
-                  className="flex items-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 bg-[#8B5CF6] mx-auto hover:bg-[#7C3AED] text-white px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50"
                 >
                   {loading ? (
                     <>

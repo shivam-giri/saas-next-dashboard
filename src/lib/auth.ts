@@ -1,4 +1,8 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
+
+class EmailNotVerified extends CredentialsSignin {
+  code = "EmailNotVerified";
+}
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma";
 import { authConfig } from "./auth.config";
@@ -50,6 +54,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
  if (!isValid) {
  console.log("Login failed: Password mismatch.");
  return null;
+ }
+
+ if (!user.emailVerified) {
+ console.log("Login failed: Email not verified.");
+ throw new EmailNotVerified();
  }
 
  return user;

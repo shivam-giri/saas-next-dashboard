@@ -225,10 +225,77 @@ export async function sendPasswordResetEmail(toEmail: string, resetUrl: string) 
  </html>
  `;
 
- await transporter.sendMail({
- from: `"SaaSify" <${process.env.SMTP_USER}>`,
- to: toEmail,
- subject: "Reset your SaaSify password",
- html,
- });
+  await transporter.sendMail({
+  from: `"SaaSify" <${process.env.SMTP_USER}>`,
+  to: toEmail,
+  subject: "Reset your SaaSify password",
+  html,
+  });
+}
+
+export async function sendEmailVerificationOTP(toEmail: string, otp: string) {
+  const html = `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify your email address</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:40px 0;">
+  <tr>
+  <td align="center">
+  <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
+  <!-- Header -->
+  <tr>
+  <td style="background:linear-gradient(135deg,#6366f1 0%,#4f46e5 100%);padding:36px 40px;">
+  <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.3px;">
+  Verify your email address
+  </h1>
+  </td>
+  </tr>
+  <!-- Body -->
+  <tr>
+  <td style="padding:36px 40px;">
+  <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;">
+  Welcome to SaaSify! 👋
+  </p>
+  <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+  Please use the verification code below to complete your registration.
+  </p>
+  <!-- OTP Display -->
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:24px;text-align:center;margin:0 0 28px;">
+    <span style="font-family:monospace;font-size:32px;font-weight:700;color:#0f172a;letter-spacing:4px;">
+      ${otp}
+    </span>
+  </div>
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:0 0 24px;" />
+  <p style="margin:0;color:#9ca3af;font-size:12px;line-height:1.6;">
+  If you didn't create an account, you can safely ignore this email.
+  </p>
+  </td>
+  </tr>
+  <!-- Footer -->
+  <tr>
+  <td style="background:#f9fafb;padding:20px 40px;border-top:1px solid #e5e7eb;">
+  <p style="margin:0;color:#9ca3af;font-size:12px;text-align:center;">
+  Sent by <strong>SaaSify</strong>
+  </p>
+  </td>
+  </tr>
+  </table>
+  </td>
+  </tr>
+  </table>
+  </body>
+  </html>
+  `;
+
+  await transporter.sendMail({
+  from: `"SaaSify" <${process.env.SMTP_USER}>`,
+  to: toEmail,
+  subject: "Your SaaSify Verification Code",
+  html,
+  });
 }

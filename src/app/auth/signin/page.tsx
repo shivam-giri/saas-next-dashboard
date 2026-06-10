@@ -10,6 +10,7 @@ export default async function SignInPage({
     const resolvedParams = await searchParams;
     const callbackUrl = (resolvedParams?.callbackUrl as string) || "/dashboard";
     const passwordReset = resolvedParams?.reset === "success";
+    const verifyStatus = resolvedParams?.verify as string | undefined;
 
 
     return (
@@ -37,6 +38,14 @@ export default async function SignInPage({
                 {passwordReset && (
                     <div className="mt-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-300 text-center">
                         ✓ Password updated successfully. Sign in with your new password.
+                    </div>
+                )}
+
+
+
+                {verifyStatus === "success" && (
+                    <div className="mt-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-300 text-center">
+                        ✓ Email verified successfully! You can now sign in.
                     </div>
                 )}
 

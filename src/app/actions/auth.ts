@@ -6,7 +6,8 @@ import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { sendPasswordResetEmail } from "@/lib/mailer";
+import { sendPasswordResetEmail, sendEmailVerificationOTP } from "@/lib/mailer";
+import crypto from "crypto";
 
 export async function signUpAction(prevState: any, formData: FormData) {
  const email = (formData.get("email") as string)?.toLowerCase().trim();
@@ -45,11 +46,27 @@ export async function signUpAction(prevState: any, formData: FormData) {
  },
  });
 
- // Redirect to sign-in so the user logs in with their new credentials
- const signInUrl = callbackUrl !== "/dashboard" 
-  ? `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}` 
-  : "/auth/signin";
- redirect(signInUrl);
+ // Generate 6-digit verification OTP
+ const token = Math.floor(100000 + Math.random() * 900000).toString();
+ const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+ 
+ await prisma.verificationToken.create({
+   data: {
+     identifier: email,
+     token,
+     expires,
+   },
+ });
+
+ try {
+   await sendEmailVerificationOTP(email, token);
+ } catch (error) {
+   console.error("Failed to send verification email:", error);
+   // We might still want to redirect them and let them request another
+ }
+
+ // Redirect to OTP verification page
+ redirect(`/auth/verify-otp?email=${encodeURIComponent(email)}`);
 }
 
 export async function signInCredentialsAction(prevState: any, formData: FormData) {
@@ -68,6 +85,10 @@ export async function signInCredentialsAction(prevState: any, formData: FormData
  if (error instanceof AuthError) {
  switch (error.type) {
  case "CredentialsSignin":
+ // @ts-ignore
+ if (error.cause?.err?.code === "EmailNotVerified") {
+ return { error: "Please verify your email address to sign in." };
+ }
  return { error: "Invalid email or password." };
  default:
  return { error: "Something went wrong. Please try again." };
