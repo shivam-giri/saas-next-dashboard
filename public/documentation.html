@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaSify Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        h1, h2, h3, h4 { color: #111; }
+        h1 { border-bottom: 2px solid #eaecef; padding-bottom: 10px; }
+        h2 { border-bottom: 1px solid #eaecef; padding-bottom: 8px; margin-top: 40px; }
+        pre { background: #f6f8fa; padding: 16px; border-radius: 8px; overflow-x: auto; }
+        code { background: #f6f8fa; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 90%; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        table th, table td { border: 1px solid #dfe2e5; padding: 8px 12px; text-align: left; }
+        table th { background: #f6f8fa; }
+        a { color: #0366d6; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        hr { border: 0; border-top: 1px solid #eaecef; margin: 40px 0; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SaaSify Master Documentation</h1>
+<hr>
+<h2>Document: PRD.md</h2>
+<h1>Product Requirements Document (PRD): SaaSify</h1>
+<h2>1. Executive Summary &amp; App Overview</h2>
+<p><strong>SaaSify</strong> is a production-grade, multi-tenant AI-powered SaaS platform. The core idea behind the application is to provide marketing teams, agencies, and founders with a unified workspace to manage their brand identity and automatically generate high-quality, on-brand content (Blog Posts, Tweets, LinkedIn posts, and Marketing Emails) using advanced AI. </p>
+<p>The application is built to handle the entire lifecycle of content creation: from initial AI generation guided by a strict &quot;Brand Voice&quot; to a full review and approval workflow involving team members and workspace administrators. It monetizes this value through a Stripe-powered credit and subscription system.</p>
+<h2>2. Exactly What We Have Built</h2>
+<p>We have developed a full-stack, scalable Next.js 16 application with the following core pillars fully implemented:</p>
+<ol>
+<li><strong>Robust Authentication &amp; Security</strong>: Passwordless magic links, traditional credentials, and social logins (Google &amp; GitHub) powered by NextAuth v5.</li>
+<li><strong>True Multi-Tenancy</strong>: Users can create and switch between multiple workspaces. Data, billing, and content are strictly isolated per workspace.</li>
+<li><strong>Role-Based Access Control &amp; Team Collaboration</strong>: Workspace Admins can invite Members via secure email links. Admins have overarching control to manage billing, brand voice, and review/approve AI content.</li>
+<li><strong>AI Content Engine</strong>: Integration with Google Gemini 2.5 Flash to dynamically generate specific content formats that strictly adhere to a workspace&#39;s custom &quot;Brand Voice&quot; rules.</li>
+<li><strong>Content Workflow</strong>: A tiered organizational structure where &quot;Campaigns&quot; group together multiple &quot;Content Documents&quot;. Documents go through a specific lifecycle (<code>DRAFT</code> → <code>IN_REVIEW</code> → <code>APPROVED</code>), complete with an admin feedback loop (commenting system).</li>
+<li><strong>Monetization &amp; Analytics</strong>: A credit-based usage system hooked into Stripe subscriptions and webhooks, accompanied by an analytics dashboard to track revenue and usage.</li>
+</ol>
+<h2>3. Feature List</h2>
+<h3>🔐 Authentication &amp; Onboarding</h3>
+<ul>
+<li><strong>Multi-Provider Login</strong>: Email/Password, Google OAuth, GitHub OAuth, and Magic Links.</li>
+<li><strong>Onboarding Flow</strong>: Forces new users to create their first workspace before accessing the dashboard.</li>
+</ul>
+<h3>🏢 Workspace &amp; Team Management</h3>
+<ul>
+<li><strong>Workspace Switcher</strong>: Seamless UI to jump between different workspaces.</li>
+<li><strong>Role Management</strong>: <code>ADMIN</code> and <code>MEMBER</code> roles with distinct permissions.</li>
+<li><strong>Email Invitations</strong>: Secure, single-use, 7-day expiring email invitations powered by Nodemailer and Gmail SMTP.</li>
+<li><strong>Pending Invites Dashboard</strong>: Admins can view and revoke pending invitations.</li>
+</ul>
+<h3>🎨 Brand Voice Configuration</h3>
+<ul>
+<li><strong>Custom Brand Identity</strong>: Admins define Tone, Target Audience, Core Values, and &quot;Do Not Use&quot; words.</li>
+<li><strong>AI Context</strong>: This brand voice is automatically injected as system instructions into all Gemini AI generation requests for the workspace.</li>
+</ul>
+<h3>🤖 AI Content Generation</h3>
+<ul>
+<li><strong>Campaign Creation</strong>: Users input a single topic/prompt and select desired formats (Blog, Tweet, LinkedIn, Email).</li>
+<li><strong>Synchronous Generation</strong>: The AI generates all selected formats simultaneously, deducting the appropriate number of credits from the workspace.</li>
+<li><strong>Mock Mode</strong>: Graceful fallback when the Gemini API key is missing.</li>
+</ul>
+<h3>📝 Document Review &amp; Approval Workflow</h3>
+<ul>
+<li><strong>Lifecycle Statuses</strong>: Documents start as <code>DRAFT</code>, are submitted to <code>IN_REVIEW</code>, and finally marked as <code>APPROVED</code>.</li>
+<li><strong>Inline Editing</strong>: The original creator can freely edit a document while it is in the <code>DRAFT</code> state.</li>
+<li><strong>Admin Feedback Loop</strong>: Admins can review documents and leave an <code>adminComment</code> (feedback/requested changes) directly on the document card. Members can read this feedback and adjust the draft.</li>
+<li><strong>Publish Ready</strong>: One-click copy-to-clipboard functionality for approved content.</li>
+</ul>
+<h3>💳 Billing &amp; Analytics</h3>
+<ul>
+<li><strong>Credit System</strong>: AI generations cost credits. Free tiers have hard limits.</li>
+<li><strong>Stripe Integration</strong>: Checkout sessions and webhooks (<code>checkout.session.completed</code>, <code>customer.subscription.updated</code>) for upgrading plans and replenishing credits.</li>
+<li><strong>Dashboard Analytics</strong>: Visual revenue and usage charts built with Recharts.</li>
+</ul>
+<h3>🌓 User Experience</h3>
+<ul>
+<li><strong>Dark/Light Mode</strong>: System-aware theme toggling with persistent state.</li>
+<li><strong>Responsive Design</strong>: Polished UI built with Tailwind CSS 4.</li>
+</ul>
+<h2>4. User Flows</h2>
+<h3>A. The Creator Flow</h3>
+<ol>
+<li><strong>Sign Up</strong>: User signs up via Google OAuth.</li>
+<li><strong>Onboarding</strong>: User is prompted to name and create their first Workspace.</li>
+<li><strong>Brand Setup</strong>: User navigates to the Brand tab and defines their startup&#39;s tone and restricted words.</li>
+<li><strong>Generation</strong>: User creates a Campaign called &quot;Product Launch&quot;, requests a Blog Post and a Tweet, and provides a topic description. The AI generates the content and deducts 2 credits.</li>
+<li><strong>Review</strong>: The user reviews the content, makes manual edits in the text area, and marks it as ready.</li>
+</ol>
+<h3>B. The Team Collaboration Flow</h3>
+<ol>
+<li><strong>Invite</strong>: The Workspace Admin goes to the Team tab and invites a colleague (<code>colleague@example.com</code>) as a Member.</li>
+<li><strong>Acceptance</strong>: The colleague clicks the link in their email and is immediately dropped into the workspace.</li>
+<li><strong>Drafting</strong>: The Member generates a new Campaign. They tweak the generated Draft and click &quot;Submit for Review&quot;.</li>
+<li><strong>Feedback</strong>: The Admin reviews the document. They aren&#39;t satisfied, so they leave a comment in the &quot;Admin Feedback&quot; box and click &quot;Reject&quot; (sending it back to <code>DRAFT</code>).</li>
+<li><strong>Approval</strong>: The Member sees the feedback, updates the text, and resubmits. The Admin clicks &quot;Approve&quot;.</li>
+</ol>
+<h2>5. Technical Stack Overview</h2>
+<ul>
+<li><strong>Core</strong>: Next.js 16.2 (App Router), React 19, TypeScript 5</li>
+<li><strong>Styling</strong>: Tailwind CSS 4, Lucide React (Icons), <code>next-themes</code></li>
+<li><strong>Database</strong>: PostgreSQL (hosted on Neon.tech)</li>
+<li><strong>ORM</strong>: Prisma 7</li>
+<li><strong>Authentication</strong>: NextAuth v5 (Beta) + <code>@auth/prisma-adapter</code></li>
+<li><strong>AI Integration</strong>: Google Gemini 2.5 Flash (<code>@google/genai</code>)</li>
+<li><strong>Payments</strong>: Stripe SDK v22</li>
+<li><strong>Data Visualization</strong>: Recharts</li>
+</ul>
+<h2>6. Database Schema Summary</h2>
+<ul>
+<li><strong>Auth Layer</strong>: <code>User</code>, <code>Account</code>, <code>Session</code>, <code>VerificationToken</code>, <code>PasswordResetToken</code></li>
+<li><strong>Tenant Layer</strong>: <code>Workspace</code>, <code>WorkspaceMember</code>, <code>WorkspaceInvitation</code></li>
+<li><strong>Feature Layer</strong>: <ul>
+<li><code>BrandVoice</code> (1-to-1 with Workspace)</li>
+<li><code>Campaign</code> (1-to-Many with Workspace)</li>
+<li><code>ContentDocument</code> (1-to-Many with Campaign, contains <code>adminComments</code> and <code>status</code>)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2>Document: TRD.md</h2>
+<h1>Technical Requirements Document (TRD): SaaSify</h1>
+<h2>1. Architectural Blueprint</h2>
+<p>SaaSify is built on a modern, server-centric React architecture leveraging the <strong>Next.js App Router</strong>. The application emphasizes security, performance, and strong typing by keeping heavy business logic and database interactions strictly on the server.</p>
+<h3>Core Architectural Decisions</h3>
+<ul>
+<li><strong>Server Actions</strong>: All database mutations (creating workspaces, generating AI content, managing team members) are executed via Next.js Server Actions (<code>&quot;use server&quot;</code>). There are almost no traditional <code>/api</code> REST endpoints exposed to the client, preventing API key leakage and reducing attack surface.</li>
+<li><strong>Edge Middleware</strong>: A Next.js <code>middleware.ts</code> file acts as a gatekeeper, verifying authentication tokens at the Edge before rendering protected <code>/dashboard</code> routes.</li>
+<li><strong>Server-Side Rendering (SSR)</strong>: Dashboards and campaign views are fetched securely on the server using Prisma, eliminating loading spinners for initial data fetches and ensuring secure RBAC (Role-Based Access Control) checks.</li>
+<li><strong>Client Components</strong>: Used sparingly (via <code>&quot;use client&quot;</code>) only where interactivity is required, such as React&#39;s <code>useActionState</code> for form handling, chart rendering, and theme toggling.</li>
+</ul>
+<h2>2. The Tech Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Technology</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Framework</strong></td>
+<td>Next.js</td>
+<td>16.2.3</td>
+<td>Core framework, routing, and server actions (Turbopack enabled)</td>
+</tr>
+<tr>
+<td><strong>UI Library</strong></td>
+<td>React</td>
+<td>19.2.4</td>
+<td>UI components and modern hooks (<code>useActionState</code>)</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>TypeScript</td>
+<td>5.x</td>
+<td>End-to-end type safety</td>
+</tr>
+<tr>
+<td><strong>Styling</strong></td>
+<td>Tailwind CSS</td>
+<td>4.x</td>
+<td>Utility-first CSS styling</td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td>PostgreSQL</td>
+<td>(Neon.tech)</td>
+<td>Primary relational database</td>
+</tr>
+<tr>
+<td><strong>ORM</strong></td>
+<td>Prisma</td>
+<td>7.7.0</td>
+<td>Database modeling, migrations, and type-safe querying</td>
+</tr>
+</tbody></table>
+<h2>3. Core Dependencies &amp; Libraries</h2>
+<h3>Authentication &amp; Security</h3>
+<ul>
+<li><strong><code>next-auth</code> (v5 Beta)</strong>: Handles the complex OAuth handshake, magic link email tokenization, and session management.</li>
+<li><strong><code>@auth/prisma-adapter</code></strong>: Syncs NextAuth sessions and users directly into the Prisma PostgreSQL database.</li>
+<li><strong><code>bcryptjs</code></strong>: Hashes and verifies passwords for traditional credential-based sign-ins.</li>
+</ul>
+<h3>Artificial Intelligence</h3>
+<ul>
+<li><strong><code>@google/genai</code></strong>: The official Google SDK used to communicate with the <strong>Gemini 2.5 Flash</strong> model for high-speed, cost-effective content generation.</li>
+</ul>
+<h3>Database Drivers</h3>
+<ul>
+<li><strong><code>@prisma/adapter-pg</code> &amp; <code>pg</code></strong>: Allows Prisma to communicate efficiently with the serverless Neon PostgreSQL database via connection pooling.</li>
+</ul>
+<h3>Payments &amp; Monetization</h3>
+<ul>
+<li><strong><code>stripe</code> (v22)</strong>: Official Stripe Node.js SDK used to generate secure Checkout Sessions and verify incoming webhook signatures.</li>
+</ul>
+<h3>UI &amp; Utilities</h3>
+<ul>
+<li><strong><code>recharts</code></strong>: Renders the interactive revenue and analytics charts on the dashboard.</li>
+<li><strong><code>lucide-react</code></strong>: Provides clean, modern SVG icons used throughout the interface.</li>
+<li><strong><code>next-themes</code></strong>: Handles system-aware Dark/Light mode toggling without hydration mismatch flashes.</li>
+<li><strong><code>nodemailer</code></strong>: Connects to Gmail SMTP to send HTML-formatted workspace invitation emails.</li>
+</ul>
+<h2>4. External APIs &amp; Webhooks Used</h2>
+<h3>1. Google Gemini API (<code>generativelanguage.googleapis.com</code>)</h3>
+<ul>
+<li><strong>Usage</strong>: Used in <code>src/lib/gemini.ts</code> to generate Blog Posts, Tweets, LinkedIn updates, and Emails.</li>
+<li><strong>Integration</strong>: The app injects the workspace&#39;s specific <code>BrandVoice</code> as &quot;system instructions&quot; into the API request to ensure strict adherence to tone and vocabulary.</li>
+</ul>
+<h3>2. Stripe API (<code>api.stripe.com</code>)</h3>
+<ul>
+<li><strong>Usage</strong>: Handles the SaaS subscription lifecycle.</li>
+<li><strong>Webhook Endpoint</strong>: <code>POST /api/stripe/webhook</code></li>
+<li><strong>Events Listened To</strong>:<ul>
+<li><code>checkout.session.completed</code>: Upgrades the workspace plan and grants initial AI credits.</li>
+<li><code>customer.subscription.updated</code>: Syncs active subscription status and replenishes credits.</li>
+</ul>
+</li>
+</ul>
+<h3>3. Google &amp; GitHub OAuth APIs</h3>
+<ul>
+<li><strong>Usage</strong>: Used by NextAuth to authenticate users without passwords.</li>
+<li><strong>Integration</strong>: Requires specific Client IDs and Secrets configured in the respective developer consoles.</li>
+</ul>
+<h3>4. Gmail SMTP Server (<code>smtp.gmail.com</code>)</h3>
+<ul>
+<li><strong>Usage</strong>: Sends workspace invitation emails to colleagues.</li>
+<li><strong>Integration</strong>: Uses NodeMailer authenticated via a 16-character Google App Password.</li>
+</ul>
+<h2>5. Database Blueprint</h2>
+<p>The database is structured to support multi-tenancy and data isolation.</p>
+<h3>Key Relationships</h3>
+<ul>
+<li><strong><code>User</code> ↔ <code>WorkspaceMember</code> ↔ <code>Workspace</code></strong>: A User can belong to many Workspaces, and a Workspace has many Users. The junction table <code>WorkspaceMember</code> holds the specific <code>Role</code> (ADMIN vs MEMBER).</li>
+<li><strong><code>Workspace</code> → <code>BrandVoice</code></strong>: A strict 1-to-1 relationship defining the AI rules for that specific tenant.</li>
+<li><strong><code>Workspace</code> → <code>Campaign</code> → <code>ContentDocument</code></strong>: Hierarchical data model where a tenant owns a campaign, and a campaign contains multiple generated documents.</li>
+<li><strong><code>Workspace</code> → Billing Fields</strong>: Stripe IDs (<code>stripeCustomerId</code>, <code>stripeSubscriptionId</code>) and <code>creditsRemaining</code> are stored directly on the <code>Workspace</code> model to enforce tenant-level limits.</li>
+</ul>
+<h2>6. Deployment Strategy</h2>
+<ul>
+<li><strong>Platform</strong>: Vercel (Optimized for Next.js 16 Edge runtime and Server Actions).</li>
+<li><strong>Environment Variables</strong>: Managed securely via Vercel dashboard.</li>
+<li><strong>Build Step</strong>: The <code>postinstall</code> script runs <code>prisma generate</code> automatically during the Vercel build process to compile the Prisma Client before the Next.js build begins.</li>
+<li><strong>Database Connection</strong>: Uses Neon&#39;s connection pooler URL (<code>-pooler</code> in the host string) for standard queries to prevent connection exhaustion in serverless environments.</li>
+</ul>
+<hr>
+<h2>Document: App_Flow.md</h2>
+<h1>App Flow &amp; User Journey: SaaSify</h1>
+<p>This document outlines the core user journeys, step-by-step application flows, and the complete navigation structure (sitemap) of the SaaSify platform.</p>
+<hr>
+<h2>1. Primary User Journeys</h2>
+<h3>A. New User Onboarding Journey</h3>
+<p>The goal of this flow is to convert a visitor into an active workspace owner.</p>
+<img src="/docs-images/mermaid-1.svg" alt="Flowchart" style="max-width: 100%; border-radius: 8px; margin: 20px auto; display: block;" /><h3>B. AI Content Generation Journey</h3>
+<p>The core value loop where users define their brand and generate marketing materials.</p>
+<img src="/docs-images/mermaid-2.svg" alt="Flowchart" style="max-width: 100%; border-radius: 8px; margin: 20px auto; display: block;" /><h3>C. Team Invitation &amp; Review Journey</h3>
+<p>The multiplayer flow for team collaboration and content approval.</p>
+<img src="/docs-images/mermaid-3.svg" alt="Flowchart" style="max-width: 100%; border-radius: 8px; margin: 20px auto; display: block;" /><hr>
+<h2>2. Navigation Map (Sitemap)</h2>
+<p>The application uses the Next.js App Router. Below is the complete route tree outlining how screens connect to each other.</p>
+<h3>🌐 Public &amp; Auth Routes</h3>
+<p>Pages accessible to anyone on the internet.</p>
+<ul>
+<li><code>/</code> (Landing Page)<ul>
+<li><code>-&gt;</code> <strong>Get Started</strong> routes to <code>/auth/signup</code></li>
+<li><code>-&gt;</code> <strong>Login</strong> routes to <code>/auth/signin</code></li>
+</ul>
+</li>
+<li><code>/auth/signin</code><ul>
+<li>Options: Google, GitHub, Magic Link, Password</li>
+<li><code>-&gt;</code> <strong>Forgot Password?</strong> routes to <code>/auth/forgot-password</code></li>
+<li><code>-&gt;</code> <strong>Don&#39;t have an account?</strong> routes to <code>/auth/signup</code></li>
+</ul>
+</li>
+<li><code>/auth/signup</code><ul>
+<li>Options: Google, GitHub, Password registration</li>
+</ul>
+</li>
+<li><code>/invite/[token]</code><ul>
+<li>Dynamic route for accepting email invitations. Prompts user to log in or register before granting workspace access.</li>
+</ul>
+</li>
+</ul>
+<h3>🏢 Protected Dashboard Routes</h3>
+<p>Routes protected by Next.js Edge Middleware. Require a valid session token.</p>
+<ul>
+<li><code>/onboarding</code><ul>
+<li>A dead-end route strictly for users who have signed up but belong to 0 workspaces. Users cannot navigate away until they create a workspace.</li>
+</ul>
+</li>
+<li><code>/dashboard/[workspaceSlug]</code><ul>
+<li><strong>Overview Page</strong>: Displays interactive Recharts for revenue and active users.</li>
+</ul>
+</li>
+<li><code>/dashboard/[workspaceSlug]/campaigns</code><ul>
+<li><strong>Campaigns List</strong>: Table of all AI campaigns. Includes a &quot;Create Campaign&quot; modal.</li>
+<li><code>-&gt;</code> <strong>Campaign Details</strong> routes to <code>/dashboard/[workspaceSlug]/campaigns/[campaignId]</code><ul>
+<li>Displays individual <code>DocumentCard</code> components (Blog, Tweet, etc.).</li>
+<li>Contains inline editing, status transitions, and the Admin Feedback box.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>/dashboard/[workspaceSlug]/brand</code><ul>
+<li><strong>Brand Voice</strong>: Form to update the AI&#39;s Tone, Target Audience, Core Values, and Banned Words.</li>
+</ul>
+</li>
+<li><code>/dashboard/[workspaceSlug]/team</code><ul>
+<li><strong>Team Management</strong>: List of current members. </li>
+<li>Admin view: Includes &quot;Invite Member&quot; form and &quot;Pending Invitations&quot; table with revoke buttons.</li>
+</ul>
+</li>
+<li><code>/dashboard/[workspaceSlug]/billing</code><ul>
+<li><strong>Subscription Portal</strong>: Displays current plan (Free vs Pro) and remaining AI credits.</li>
+<li>Includes a Stripe &quot;Upgrade to Pro&quot; checkout button or a &quot;Manage Subscription&quot; portal link.</li>
+</ul>
+</li>
+<li><code>/dashboard/[workspaceSlug]/settings</code><ul>
+<li><strong>Workspace Settings</strong>: (Admin Only) Options to rename the workspace slug or permanently delete the workspace.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2>3. Persistent UI Elements</h2>
+<p>When a user is inside the <code>/dashboard/[workspaceSlug]</code> layout, the following elements are always present:</p>
+<ol>
+<li><strong>Sidebar Navigation (Left)</strong><ul>
+<li>Workspace Switcher Dropdown (Switch between tenant accounts)</li>
+<li>Navigation Links: Home, Campaigns, Brand Voice, Team, Billing, Settings.</li>
+</ul>
+</li>
+<li><strong>Top Navigation Bar</strong><ul>
+<li>Breadcrumbs showing current page path.</li>
+<li>Plan Badge (e.g., &quot;Pro Plan&quot;).</li>
+<li>Credits Badge (e.g., &quot;🪙 42 Credits Remaining&quot;).</li>
+<li>Dark/Light Mode Theme Toggle.</li>
+<li>User Avatar Dropdown (Sign Out).</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Document: UI_UX_Design_Brief.md</h2>
+<h1>UI/UX Design Brief: SaaSify</h1>
+<p>This document outlines the core design principles, visual aesthetics, component structure, and user experience goals for the SaaSify platform.</p>
+<h2>1. Design Philosophy &amp; Goals</h2>
+<p>SaaSify aims to deliver a <strong>premium, professional, and frictionless</strong> experience tailored for marketing teams and agency founders. </p>
+<ul>
+<li><strong>Clarity Over Clutter</strong>: The interface prioritizes content and actionable data. Whitespace is used generously to prevent cognitive overload.</li>
+<li><strong>Task-Oriented Flow</strong>: Since the primary user goal is generating and reviewing AI content, the campaign and document views are designed to minimize clicks and keep users focused on the text.</li>
+<li><strong>Dynamic &amp; Responsive</strong>: The app feels alive with subtle micro-interactions (hover states, disabled transitions) and is fully responsive from desktop monitors down to mobile devices.</li>
+<li><strong>Accessibility First</strong>: High contrast text, clear visual hierarchy, and semantic HTML structure ensure the app is usable by everyone.</li>
+</ul>
+<h2>2. Visual Identity &amp; Theming</h2>
+<p>The application utilizes <code>next-themes</code> to provide a system-aware, user-toggleable <strong>Dark and Light Mode</strong> experience. The theming relies heavily on a custom Tailwind CSS 4 utility palette.</p>
+<h3>Primary Color Palette (Dark Mode Base)</h3>
+<ul>
+<li><strong>Backgrounds</strong>: Deep slate/navy tones to reduce eye strain.<ul>
+<li>App Background: <code>#0F0F1A</code> (Very dark blue/black)</li>
+<li>Card/Surface Background: <code>#1A1A2E</code> (Slightly lighter navy for elevation)</li>
+</ul>
+</li>
+<li><strong>Typography</strong>: <ul>
+<li>Primary Text: <code>#E5E7EB</code> (Soft white/gray for readability)</li>
+<li>Secondary/Muted Text: <code>#9CA3AF</code> (Medium gray for table headers and metadata)</li>
+</ul>
+</li>
+<li><strong>Accents &amp; Status Colors</strong>:<ul>
+<li><strong>Brand Accent</strong>: Electric Purple/Indigo (Used for active states and primary buttons).</li>
+<li><strong>Success</strong>: Emerald Green (For <code>APPROVED</code> statuses and success toasts).</li>
+<li><strong>Warning/Pending</strong>: Amber/Orange (e.g., <code>text-amber-800</code> for pending invitations or <code>DRAFT</code> statuses).</li>
+<li><strong>Destructive</strong>: Red (<code>text-red-500</code> for deleting campaigns or revoking invites).</li>
+</ul>
+</li>
+</ul>
+<h3>Typography</h3>
+<p>The application relies on modern, clean sans-serif typography (typically <code>Inter</code> or the Next.js <code>Geist</code> font).</p>
+<ul>
+<li><strong>Headings</strong>: Semi-bold to Bold weights, maximizing hierarchy.</li>
+<li><strong>Body Text</strong>: Regular weight, optimized for reading long-form generated AI content.</li>
+</ul>
+<h2>3. Core Layout Structure</h2>
+<p>The protected dashboard routes utilize a standard, highly effective SaaS layout:</p>
+<ol>
+<li><strong>The Sidebar (Left)</strong><ul>
+<li>Fixed to the left edge of the screen on desktop; collapses into a hamburger menu on mobile.</li>
+<li>Contains the Workspace Switcher at the top.</li>
+<li>Houses primary navigation links accompanied by <code>lucide-react</code> icons for quick visual scanning.</li>
+</ul>
+</li>
+<li><strong>The Top Navigation Bar</strong><ul>
+<li>Sticky at the top of the content area.</li>
+<li>Displays breadcrumbs to orient the user within deep routes (e.g., <code>Campaigns / Product Launch</code>).</li>
+<li>Contains global context badges: the current Subscription Plan and Remaining AI Credits.</li>
+<li>Houses the Theme Toggle and User Profile/Logout dropdown.</li>
+</ul>
+</li>
+<li><strong>The Main Content Area</strong><ul>
+<li>Centered with a maximum width (<code>max-w-7xl</code> or similar) on large screens to maintain readable line lengths.</li>
+<li>Generous padding (<code>p-6</code> or <code>p-8</code>) to separate content from the navigation boundaries.</li>
+</ul>
+</li>
+</ol>
+<h2>4. Component Design Patterns</h2>
+<p>Consistency is maintained through reusable UI patterns:</p>
+<h3>Cards &amp; Surfaces</h3>
+<ul>
+<li>Used to group related information (e.g., a Content Document or a Revenue Chart).</li>
+<li>Styled with subtle borders (<code>border border-white/10</code>), rounded corners (<code>rounded-xl</code>), and soft shadows (<code>shadow-sm</code>).</li>
+</ul>
+<h3>Tables &amp; Data Grids</h3>
+<ul>
+<li>Used for Campaigns and Team Members.</li>
+<li>Header rows have muted backgrounds and uppercase, tracked-out text.</li>
+<li>Rows feature subtle hover effects (<code>hover:bg-[#0F0F1A]/50</code>) to help users track data across wide screens.</li>
+</ul>
+<h3>Badges &amp; Status Indicators</h3>
+<ul>
+<li>Heavily utilized to convey state at a glance.</li>
+<li>Styled as pill-shapes (<code>rounded-full px-2 py-1 text-sm font-bold</code>).</li>
+<li>Examples: <ul>
+<li><code>ADMIN</code> role badge: <code>bg-purple-100 text-purple-700</code></li>
+<li><code>MEMBER</code> role badge: <code>bg-[#1A1A2E] text-[#E5E7EB]</code></li>
+</ul>
+</li>
+</ul>
+<h3>Buttons &amp; Forms</h3>
+<ul>
+<li><strong>Primary Buttons</strong>: Solid background using the brand accent color, white text.</li>
+<li><strong>Secondary Buttons</strong>: Transparent backgrounds with subtle borders and hover-fill states.</li>
+<li><strong>Disabled States</strong>: Reduced opacity (<code>disabled:opacity-60</code>) and disabled pointer events, often accompanied by a spinning loader icon during asynchronous Server Actions.</li>
+</ul>
+<h2>5. Interaction Design &amp; UX Details</h2>
+<ul>
+<li><strong>Optimistic UI &amp; Feedback</strong>: Forms utilize Next.js <code>useActionState</code> to instantly display pending states (e.g., changing a &quot;Save&quot; button to &quot;Saving...&quot;). </li>
+<li><strong>Inline Editing</strong>: Instead of routing users to a separate edit page, Content Documents can be edited directly within a <code>&lt;textarea&gt;</code> on the Document Card, reducing friction.</li>
+<li><strong>Destructive Action Friction</strong>: Deleting a workspace or revoking an invitation requires explicit confirmation, and the buttons are styled with warning colors (Red) to prevent accidental clicks.</li>
+<li><strong>Graceful Fallbacks</strong>: If data is empty (e.g., 0 Pending Invitations), the UI collapses cleanly or shows a friendly &quot;Empty State&quot; graphic rather than displaying a broken or empty table.</li>
+</ul>
+<hr>
+<h2>Document: Backend_Schema.md</h2>
+<h1>Backend Schema: SaaSify</h1>
+<p>This document outlines the PostgreSQL database schema managed by Prisma. It details all tables, their columns, and the relationships between them.</p>
+<hr>
+<h2>1. Entity-Relationship Diagram</h2>
+<img src="/docs-images/mermaid-4.svg" alt="Flowchart" style="max-width: 100%; border-radius: 8px; margin: 20px auto; display: block;" /><hr>
+<h2>2. Authentication Layer</h2>
+<p>These tables handle user identity, social logins, and passwordless flows, strictly adhering to the <code>@auth/prisma-adapter</code> specifications for NextAuth.</p>
+<h3><code>User</code></h3>
+<p>The central identity of a human interacting with the system.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Attributes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>String</td>
+<td><code>@id</code> <code>cuid()</code></td>
+<td>Primary Key</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>String?</td>
+<td></td>
+<td>User&#39;s display name</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>String?</td>
+<td><code>@unique</code></td>
+<td>Used for login and notifications</td>
+</tr>
+<tr>
+<td><code>emailVerified</code></td>
+<td>DateTime?</td>
+<td></td>
+<td>Timestamp of email verification (Magic Links)</td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td>String?</td>
+<td></td>
+<td>Avatar URL from OAuth provider</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td>String?</td>
+<td></td>
+<td>bcrypt-hashed password (null for OAuth users)</td>
+</tr>
+<tr>
+<td><code>createdAt</code> / <code>updatedAt</code></td>
+<td>DateTime</td>
+<td></td>
+<td>Timestamps</td>
+</tr>
+</tbody></table>
+<h3><code>Account</code></h3>
+<p>Stores OAuth provider profiles (e.g., Google, GitHub) linked to a <code>User</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Attributes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>String</td>
+<td><code>@id</code> <code>cuid()</code></td>
+<td>Primary Key</td>
+</tr>
+<tr>
+<td><code>userId</code></td>
+<td>String</td>
+<td><code>FK</code></td>
+<td>Links to <code>User.id</code></td>
+</tr>
+<tr>
+<td><code>type</code> / <code>provider</code></td>
+<td>String</td>
+<td></td>
+<td>e.g., &quot;oauth&quot;, &quot;google&quot;</td>
+</tr>
+<tr>
+<td><code>providerAccountId</code></td>
+<td>String</td>
+<td></td>
+<td>The user ID from the external provider</td>
+</tr>
+<tr>
+<td><code>access_token</code> / <code>refresh_token</code></td>
+<td>String?</td>
+<td></td>
+<td>OAuth tokens</td>
+</tr>
+</tbody></table>
+<h3><code>Session</code> &amp; <code>VerificationToken</code> &amp; <code>PasswordResetToken</code></h3>
+<ul>
+<li><strong><code>Session</code></strong>: Stores active database sessions. Includes <code>sessionToken</code> and <code>expires</code>. Links to <code>User.id</code>.</li>
+<li><strong><code>VerificationToken</code></strong>: Stores Magic Link tokens. Includes <code>identifier</code> (email), <code>token</code>, and <code>expires</code>.</li>
+<li><strong><code>PasswordResetToken</code></strong>: Custom table for traditional password resets. Includes <code>email</code>, <code>token</code>, and <code>expiresAt</code>.</li>
+</ul>
+<hr>
+<h2>3. Multi-Tenant Layer</h2>
+<p>These tables organize data into isolated <code>Workspaces</code>, enforcing boundaries between different customers.</p>
+<h3><code>Workspace</code></h3>
+<p>The core tenant unit. Billing and AI credit limits are applied here.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Attributes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>String</td>
+<td><code>@id</code> <code>cuid()</code></td>
+<td>Primary Key</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>String</td>
+<td></td>
+<td>Display name of the workspace</td>
+</tr>
+<tr>
+<td><code>slug</code></td>
+<td>String</td>
+<td><code>@unique</code></td>
+<td>URL-friendly unique identifier</td>
+</tr>
+<tr>
+<td><code>stripeCustomerId</code></td>
+<td>String?</td>
+<td><code>@unique</code></td>
+<td>Stripe customer reference</td>
+</tr>
+<tr>
+<td><code>stripeSubscriptionId</code></td>
+<td>String?</td>
+<td><code>@unique</code></td>
+<td>Active Stripe subscription reference</td>
+</tr>
+<tr>
+<td><code>stripePriceId</code></td>
+<td>String?</td>
+<td></td>
+<td>Current Stripe plan (Free vs Pro)</td>
+</tr>
+<tr>
+<td><code>stripeCurrentPeriodEnd</code></td>
+<td>DateTime?</td>
+<td></td>
+<td>Renewal/Expiration date</td>
+</tr>
+<tr>
+<td><code>creditsRemaining</code></td>
+<td>Int</td>
+<td><code>@default(50)</code></td>
+<td>Available AI generation credits</td>
+</tr>
+<tr>
+<td><code>createdAt</code> / <code>updatedAt</code></td>
+<td>DateTime</td>
+<td></td>
+<td>Timestamps</td>
+</tr>
+</tbody></table>
+<h3><code>WorkspaceMember</code></h3>
+<p>The junction table connecting a <code>User</code> to a <code>Workspace</code> with a specific role.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Attributes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>String</td>
+<td><code>@id</code> <code>cuid()</code></td>
+<td>Primary Key</td>
+</tr>
+<tr>
+<td><code>userId</code></td>
+<td>String</td>
+<td><code>FK</code></td>
+<td>Links to <code>User.id</code></td>
+</tr>
+<tr>
+<td><code>workspaceId</code></td>
+<td>String</td>
+<td><code>FK</code></td>
+<td>Links to <code>Workspace.id</code></td>
+</tr>
+<tr>
+<td><code>role</code></td>
+<td>Enum <code>Role</code></td>
+<td><code>@default(MEMBER)</code></td>
+<td>Either <code>ADMIN</code> or <code>MEMBER</code></td>
+</tr>
+<tr>
+<td><code>lastAccessedAt</code></td>
+<td>DateTime?</td>
+<td></td>
+<td>Tracks recent activity</td>
+</tr>
+</tbody></table>
+<h3><code>WorkspaceInvitation</code></h3>
+<p>Handles pending team invites sent via email.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Attributes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>String</td>
+<td><code>@id</code> <code>cuid()</code></td>
+<td>Primary Key</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>String</td>
+<td></td>
+<td>The invited person&#39;s email</td>
+</tr>
+<tr>
+<td><code>role</code></td>
+<td>Enum <code>Role</code></td>
+<td><code>@default(MEMBER)</code></td>
+<td>The role they will assume upon joining</td>
+</tr>
+<tr>
+<td><code>token</code></td>
+<td>String</td>
+<td><code>@unique</code> <code>cuid()</code></td>
+<td>Secure token embedded in the email link</td>
+</tr>
+<tr>
+<td><code>workspaceId</code></td>
+<td>String</td>
+<td><code>FK</code></td>
+<td>Links to <code>Workspace.id</code></td>
+</tr>
+<tr>
+<td><code>invitedById</code></td>
+<td>String</td>
+<td><code>FK</code></td>
+<td>Links to <code>User.id</code> (The admin who sent it)</td>
+</tr>
+<tr>
+<td><code>expiresAt</code></td>
+<td>DateTime</td>
+<td></td>
+<td>Usually 7 days from creation</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>4. App Domain Layer</h2>
+<p>These tables hold the actual business value generated by the users and the AI.</p>
+<h3><code>BrandVoice</code></h3>
+<p>A 1-to-1 strict configuration for a workspace&#39;s AI generation rules.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Attributes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>String</td>
+<td><code>@id</code> <code>cuid()</code></td>
+<td>Primary Key</td>
+</tr>
+<tr>
+<td><code>workspaceId</code></td>
+<td>String</td>
+<td><code>@unique</code> <code>FK</code></td>
+<td>Links to <code>Workspace.id</code></td>
+</tr>
+<tr>
+<td><code>tone</code></td>
+<td>String?</td>
+<td><code>@db.Text</code></td>
+<td>The requested style (e.g., &quot;Professional&quot;)</td>
+</tr>
+<tr>
+<td><code>targetAudience</code></td>
+<td>String?</td>
+<td><code>@db.Text</code></td>
+<td>Who the AI should speak to</td>
+</tr>
+<tr>
+<td><code>doNotUseWords</code></td>
+<td>String?</td>
+<td><code>@db.Text</code></td>
+<td>Banned vocabulary</td>
+</tr>
+<tr>
+<td><code>coreValues</code></td>
+<td>String?</td>
+<td><code>@db.Text</code></td>
+<td>Guiding principles</td>
+</tr>
+</tbody></table>
+<h3><code>Campaign</code></h3>
+<p>A logical grouping of AI content generated from a single topic prompt.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Attributes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>String</td>
+<td><code>@id</code> <code>cuid()</code></td>
+<td>Primary Key</td>
+</tr>
+<tr>
+<td><code>workspaceId</code></td>
+<td>String</td>
+<td><code>FK</code></td>
+<td>Links to <code>Workspace.id</code></td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>String</td>
+<td></td>
+<td>User-defined title for the campaign</td>
+</tr>
+<tr>
+<td><code>topic</code></td>
+<td>String</td>
+<td><code>@db.Text</code></td>
+<td>The prompt provided to the AI</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>Enum</td>
+<td><code>@default(DRAFT)</code></td>
+<td><code>DRAFT</code>, <code>IN_PROGRESS</code>, <code>COMPLETED</code></td>
+</tr>
+</tbody></table>
+<h3><code>ContentDocument</code></h3>
+<p>The actual generated content pieces (e.g., a specific Tweet or Blog Post).</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Attributes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>String</td>
+<td><code>@id</code> <code>cuid()</code></td>
+<td>Primary Key</td>
+</tr>
+<tr>
+<td><code>campaignId</code></td>
+<td>String</td>
+<td><code>FK</code></td>
+<td>Links to <code>Campaign.id</code></td>
+</tr>
+<tr>
+<td><code>workspaceId</code></td>
+<td>String</td>
+<td><code>FK</code></td>
+<td>Links to <code>Workspace.id</code></td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>String</td>
+<td></td>
+<td>Document title</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td>String</td>
+<td><code>@db.Text</code></td>
+<td>The markdown text generated by AI</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>Enum</td>
+<td></td>
+<td><code>BLOG</code>, <code>TWEET</code>, <code>LINKEDIN</code>, <code>EMAIL</code></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>Enum</td>
+<td><code>@default(DRAFT)</code></td>
+<td><code>DRAFT</code>, <code>IN_REVIEW</code>, <code>APPROVED</code></td>
+</tr>
+<tr>
+<td><code>createdById</code></td>
+<td>String</td>
+<td><code>FK</code></td>
+<td>Links to <code>User.id</code> (Who clicked generate)</td>
+</tr>
+<tr>
+<td><code>adminComments</code></td>
+<td>String?</td>
+<td><code>@db.Text</code></td>
+<td>Feedback left by workspace admins</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Document: Build_Sequence.md</h2>
+<h1>Implementation Plan &amp; Build Sequence: SaaSify</h1>
+<p>This document outlines the step-by-step build sequence used to construct the SaaSify application. It serves as a retrospective blueprint for how the application was architected from the ground up, organized into logical, incremental phases.</p>
+<hr>
+<h2>Phase 1: Foundation &amp; Database Architecture</h2>
+<p><strong>Goal</strong>: Establish the core repository, tooling, and database schema.</p>
+<ol>
+<li><strong>Initialize Project</strong>: <ul>
+<li>Scaffold a Next.js 16 project using the App Router, React 19, TypeScript, and Tailwind CSS 4.</li>
+<li>Install necessary UI utilities (<code>lucide-react</code>, <code>next-themes</code>).</li>
+</ul>
+</li>
+<li><strong>Configure Database</strong>:<ul>
+<li>Provision a serverless PostgreSQL database on Neon.tech.</li>
+<li>Initialize Prisma ORM (<code>npx prisma init</code>) and configure the <code>DATABASE_URL</code>.</li>
+</ul>
+</li>
+<li><strong>Define Schema</strong>:<ul>
+<li>Write the <code>schema.prisma</code> file defining the core entities: Users, Auth tokens, Workspaces, WorkspaceMembers, BrandVoice, Campaigns, and ContentDocuments.</li>
+<li>Execute the first migration (<code>npx prisma db push</code>) to build the tables in Neon.</li>
+</ul>
+</li>
+<li><strong>Setup Prisma Client</strong>:<ul>
+<li>Create a singleton Prisma client instance in <code>src/lib/prisma.ts</code> to prevent connection exhaustion during hot reloads.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Phase 2: Authentication &amp; Edge Security</h2>
+<p><strong>Goal</strong>: Secure the application and implement passwordless/social logins.</p>
+<ol>
+<li><strong>Install NextAuth (Auth.js)</strong>:<ul>
+<li>Install <code>next-auth@beta</code> and <code>@auth/prisma-adapter</code>.</li>
+</ul>
+</li>
+<li><strong>Configure Providers</strong>:<ul>
+<li>Set up Google OAuth and GitHub OAuth credentials.</li>
+<li>Configure Nodemailer with Gmail SMTP for Magic Link sign-ins.</li>
+</ul>
+</li>
+<li><strong>Build Auth UI</strong>:<ul>
+<li>Create public pages for <code>/auth/signin</code> and <code>/auth/signup</code>.</li>
+</ul>
+</li>
+<li><strong>Implement Middleware</strong>:<ul>
+<li>Create <code>middleware.ts</code> to run at the Edge. Ensure all <code>/dashboard</code> and <code>/onboarding</code> routes redirect unauthenticated users back to <code>/auth/signin</code>.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Phase 3: Multi-Tenancy &amp; Dashboard Shell</h2>
+<p><strong>Goal</strong>: Allow users to create tenants (Workspaces) and build the core UI layout.</p>
+<ol>
+<li><strong>The Onboarding Flow</strong>:<ul>
+<li>Build the <code>/onboarding</code> route. Force new users with zero workspaces to create one.</li>
+<li>Write the <code>createWorkspaceAction</code> Server Action, ensuring the creator is automatically assigned the <code>ADMIN</code> role in <code>WorkspaceMember</code>.</li>
+</ul>
+</li>
+<li><strong>Dashboard Layout</strong>:<ul>
+<li>Implement <code>/dashboard/[workspaceSlug]/layout.tsx</code>.</li>
+<li>Build the global <strong>Sidebar</strong> (with Workspace Switcher) and <strong>TopNav</strong> (with Theme Toggle and generic User Profile dropdown).</li>
+</ul>
+</li>
+<li><strong>Analytics Shell</strong>:<ul>
+<li>Implement the <code>recharts</code> revenue and active user charts on the main dashboard overview page.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Phase 4: Brand Voice &amp; AI Integration</h2>
+<p><strong>Goal</strong>: Connect the app to Google Gemini and enable custom AI generation.</p>
+<ol>
+<li><strong>Brand Voice Settings</strong>:<ul>
+<li>Build the <code>/dashboard/[workspaceSlug]/brand</code> page containing forms to save Tone, Target Audience, and Banned Words to the database.</li>
+</ul>
+</li>
+<li><strong>Integrate Gemini SDK</strong>:<ul>
+<li>Install <code>@google/genai</code> and initialize the client in <code>src/lib/gemini.ts</code>.</li>
+</ul>
+</li>
+<li><strong>The Generation Server Action</strong>:<ul>
+<li>Write the core Server Action that takes a user&#39;s prompt, fetches the workspace&#39;s <code>BrandVoice</code>, and constructs a structured system instruction.</li>
+<li>Call the Gemini API to generate the requested formats (Blog, Tweet, etc.).</li>
+<li>Save the raw results into the database as <code>ContentDocument</code> rows grouped under a new <code>Campaign</code>.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Phase 5: Document Workflow &amp; Admin Feedback</h2>
+<p><strong>Goal</strong>: Allow users to review, edit, and approve the AI-generated content.</p>
+<ol>
+<li><strong>Campaign UI</strong>:<ul>
+<li>Build the <code>/dashboard/[workspaceSlug]/campaigns</code> list view.</li>
+</ul>
+</li>
+<li><strong>Document Cards</strong>:<ul>
+<li>Build the detailed campaign view displaying individual documents.</li>
+<li>Implement inline editing so users can modify the AI output directly in a <code>&lt;textarea&gt;</code>.</li>
+</ul>
+</li>
+<li><strong>Approval Lifecycle &amp; Feedback</strong>:<ul>
+<li>Wire up status toggle buttons (<code>DRAFT</code> → <code>IN_REVIEW</code> → <code>APPROVED</code>).</li>
+<li>Implement the Admin Feedback loop: allow admins to write an <code>adminComment</code> on the document card that members can read and address.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Phase 6: Team Collaboration (Multiplayer)</h2>
+<p><strong>Goal</strong>: Allow Admins to invite colleagues into their workspace.</p>
+<ol>
+<li><strong>Invite UI</strong>:<ul>
+<li>Build the Team Management page. Add an &quot;Invite Member&quot; form and a table showing pending invitations.</li>
+</ul>
+</li>
+<li><strong>Invitation Action</strong>:<ul>
+<li>Create a Server Action that generates a secure, randomized <code>cuid()</code> token and saves it to <code>WorkspaceInvitation</code> with a 7-day expiration.</li>
+<li>Use Nodemailer to send a branded HTML email containing the <code>invite/[token]</code> link.</li>
+</ul>
+</li>
+<li><strong>Acceptance Route</strong>:<ul>
+<li>Build the public <code>/invite/[token]</code> dynamic route.</li>
+<li>Verify the token. If the user isn&#39;t logged in, redirect to signup/signin. Once logged in, consume the token and create a <code>WorkspaceMember</code> record.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Phase 7: Monetization (Stripe Billing)</h2>
+<p><strong>Goal</strong>: Gate AI usage behind credits and subscription plans.</p>
+<ol>
+<li><strong>Credit Enforcement</strong>:<ul>
+<li>Update the AI Generation Server Action to check <code>workspace.creditsRemaining</code>. Throw an error if credits are zero.</li>
+</ul>
+</li>
+<li><strong>Stripe Integration</strong>:<ul>
+<li>Add the Stripe Node.js SDK.</li>
+<li>Create a Server Action to generate a Stripe Checkout Session for upgrading to the &quot;Pro Plan&quot;.</li>
+</ul>
+</li>
+<li><strong>Stripe Webhooks</strong>:<ul>
+<li>Build the API route <code>POST /api/webhooks/stripe</code>.</li>
+<li>Verify the Stripe signature.</li>
+<li>Listen for <code>checkout.session.completed</code> (to grant initial credits and save the subscription ID) and <code>customer.subscription.updated</code> (to replenish monthly credits).</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Phase 8: Testing, Polish &amp; Deployment</h2>
+<p><strong>Goal</strong>: Ensure production readiness.</p>
+<ol>
+<li><strong>Strict React Purity</strong>:<ul>
+<li>Resolve any Next.js 15+ Turbopack compiler warnings (e.g., impure <code>Date.now()</code> calls in render functions or cascading effects in Theme Toggles).</li>
+</ul>
+</li>
+<li><strong>SEO &amp; Metadata</strong>:<ul>
+<li>Add dynamic Next.js Metadata for page titles and descriptions.</li>
+</ul>
+</li>
+<li><strong>Deployment</strong>:<ul>
+<li>Connect the repository to Vercel.</li>
+<li>Supply all environment variables (Stripe, Google Auth, Gemini, Neon).</li>
+<li>Ensure <code>prisma generate</code> runs in the build pipeline.</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+</body>
+</html>
