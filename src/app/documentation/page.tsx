@@ -41,7 +41,7 @@ export default function DocumentationPage() {
 
   return (
     <main className="min-h-screen bg-[#0B0B13] text-[#E5E7EB] py-16 px-6 sm:px-12 lg:px-24">
-      <div className="max-w-4xl mx-auto space-y-16">
+      <div className="mx-auto space-y-16">
         <header className="flex items-center justify-between mb-8">
             <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors" aria-label="Go back to home page">
                 <ArrowLeft className="w-4 h-4" aria-hidden="true" />
