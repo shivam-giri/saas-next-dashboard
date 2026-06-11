@@ -34,7 +34,7 @@ export default function DocumentationPage() {
 
   return (
     <div className="min-h-screen bg-[#0B0B13] text-[#E5E7EB] py-16 px-6 sm:px-12 lg:px-24">
-      <div className="max-w-4xl mx-auto space-y-16">
+      <div className="mx-auto space-y-16">
         <div className="flex items-center justify-between mb-8">
             <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                 <ArrowLeft className="w-4 h-4" />
@@ -50,8 +50,7 @@ export default function DocumentationPage() {
           doc.content ? (
             <div key={index} className="prose prose-invert prose-purple max-w-none bg-[#131320] p-8 md:p-12 rounded-3xl border border-white/5 shadow-2xl hover:border-white/10 transition-colors">
               <div className="mb-10 pb-4 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="text-sm font-bold tracking-wider text-[#A78BFA] uppercase">Document {index + 1}</span>
-                <span className="text-xs text-slate-500 font-mono bg-white/5 px-3 py-1.5 rounded-md border border-white/5">{doc.filename}</span>
+                <span className="text-sm font-bold tracking-wider text-[#A78BFA] uppercase">{index + 1} {doc.filename} </span>
               </div>
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}

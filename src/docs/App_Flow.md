@@ -11,20 +11,20 @@ The goal of this flow is to convert a visitor into an active workspace owner.
 
 ```mermaid
 flowchart TD
-    A[Landing Page `/`] --> B[Click 'Get Started']
+    A["Landing Page `/`"] --> B["Click 'Get Started'"]
     B --> C{Has Account?}
-    C -- No --> D[Sign Up `/auth/signup`]
-    C -- Yes --> E[Sign In `/auth/signin`]
+    C -- No --> D["Sign Up `/auth/signup`"]
+    C -- Yes --> E["Sign In `/auth/signin`"]
     D --> F{OAuth or Email?}
-    F -- Google/GitHub --> G[Auto-Verify & Login]
-    F -- Email/Password --> H[Verify Email]
+    F -- Google/GitHub --> G["Auto-Verify & Login"]
+    F -- Email/Password --> H["Verify Email"]
     G --> I
-    H --> I[Login Success]
+    H --> I["Login Success"]
     I --> J{Has Workspace?}
-    J -- Yes --> K[Redirect to `/dashboard/[slug]`]
-    J -- No --> L[Redirect to `/onboarding`]
-    L --> M[Enter Workspace Name]
-    M --> N[Create Workspace]
+    J -- Yes --> K["Redirect to `/dashboard/[slug]`"]
+    J -- No --> L["Redirect to `/onboarding`"]
+    L --> M["Enter Workspace Name"]
+    M --> N["Create Workspace"]
     N --> K
 ```
 
@@ -33,18 +33,18 @@ The core value loop where users define their brand and generate marketing materi
 
 ```mermaid
 flowchart TD
-    A[Dashboard Home] --> B[Navigate to `/brand`]
-    B --> C[Configure Brand Voice]
-    C --> D[Navigate to `/campaigns`]
-    D --> E[Click 'New Campaign']
-    E --> F[Enter Topic & Select Formats]
-    F --> G[Deduct Credits & Call Gemini AI]
-    G --> H[Campaign Created]
-    H --> I[Open Campaign Details]
-    I --> J[View Generated Documents]
+    A["Dashboard Home"] --> B["Navigate to `/brand`"]
+    B --> C["Configure Brand Voice"]
+    C --> D["Navigate to `/campaigns`"]
+    D --> E["Click 'New Campaign'"]
+    E --> F["Enter Topic & Select Formats"]
+    F --> G["Deduct Credits & Call Gemini AI"]
+    G --> H["Campaign Created"]
+    H --> I["Open Campaign Details"]
+    I --> J["View Generated Documents"]
     J --> K{Need Edits?}
-    K -- Yes --> L[Edit Inline & Save]
-    K -- No --> M[Submit for Review]
+    K -- Yes --> L["Edit Inline & Save"]
+    K -- No --> M["Submit for Review"]
 ```
 
 ### C. Team Invitation & Review Journey
@@ -52,23 +52,23 @@ The multiplayer flow for team collaboration and content approval.
 
 ```mermaid
 flowchart TD
-    A[Admin navigates to `/team`] --> B[Enter Colleague Email & Send Invite]
-    B --> C[Email sent via Gmail SMTP]
-    C --> D[Colleague clicks link in email]
-    D --> E[Navigates to `/invite/[token]`]
+    A["Admin navigates to `/team`"] --> B["Enter Colleague Email & Send Invite"]
+    B --> C["Email sent via Gmail SMTP"]
+    C --> D["Colleague clicks link in email"]
+    D --> E["Navigates to `/invite/[token]`"]
     E --> F{Has Account?}
-    F -- No --> G[Sign Up via OAuth/Email]
-    F -- Yes --> H[Auto-join Workspace]
+    F -- No --> G["Sign Up via OAuth/Email"]
+    F -- Yes --> H["Auto-join Workspace"]
     G --> H
-    H --> I[Member navigates to `/campaigns`]
-    I --> J[Member edits Draft & Submits for Review]
-    J --> K[Admin opens Campaign Details]
+    H --> I["Member navigates to `/campaigns`"]
+    I --> J["Member edits Draft & Submits for Review"]
+    J --> K["Admin opens Campaign Details"]
     K --> L{Admin Decision}
-    L -- Reject --> M[Leave 'Admin Feedback' comment & Reject]
-    M --> N[Member reads feedback & edits]
+    L -- Reject --> M["Leave 'Admin Feedback' comment & Reject"]
+    M --> N["Member reads feedback & edits"]
     N --> J
-    L -- Approve --> O[Mark as APPROVED]
-    O --> P[Copy to Clipboard & Publish]
+    L -- Approve --> O["Mark as APPROVED"]
+    O --> P["Copy to Clipboard & Publish"]
 ```
 
 ---
