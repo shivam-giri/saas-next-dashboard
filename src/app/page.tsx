@@ -102,8 +102,13 @@ export default function Home() {
                     <Sparkles className="w-4 h-4 text-[#A78BFA]" />
                     <span className="font-semibold text-white">ContentCore</span>
                 </div>
-                <div className="text-sm text-slate-500">
-                    © {new Date().getFullYear()} ContentCore AI. Built for modern brands.
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                    <Link href="/documentation" className="text-sm text-slate-400 hover:text-white transition-colors font-medium">
+                        Documentation
+                    </Link>
+                    <div className="text-sm text-slate-500">
+                        © {new Date().getFullYear()} ContentCore AI. Built for modern brands.
+                    </div>
                 </div>
             </footer>
         </div>
