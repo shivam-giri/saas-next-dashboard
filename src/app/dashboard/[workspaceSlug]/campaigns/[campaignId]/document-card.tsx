@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updateDocumentStatusAction, updateDocumentContentAction, deleteDocumentAction } from "@/app/actions/ai";
+import { updateDocumentStatusAction, updateDocumentContentAction, deleteDocumentAction, updateDocumentCommentAction } from "@/app/actions/ai";
 import { Loader2, CheckCircle2, Clock, Edit3, Type, Mail, MessageCircle, Share2, Save, Trash2, Copy } from "lucide-react";
 
 export function DocumentCard({
@@ -20,6 +20,8 @@ export function DocumentCard({
   const [deleting, setDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
   const [content, setContent] = useState(document.content);
+  const [adminComments, setAdminComments] = useState(document.adminComments || "");
+  const [savingComment, setSavingComment] = useState(false);
 
   const isCreator = document.createdById === currentUserId;
   const isDraft = document.status === "DRAFT";
@@ -34,6 +36,12 @@ export function DocumentCard({
     setSaving(true);
     await updateDocumentContentAction(document.id, content, workspaceId);
     setSaving(false);
+  }
+
+  async function handleSaveComment() {
+    setSavingComment(true);
+    await updateDocumentCommentAction(document.id, adminComments, workspaceId);
+    setSavingComment(false);
   }
 
   async function handleDelete() {
@@ -104,12 +112,40 @@ export function DocumentCard({
         />
       </div>
 
-      <div className="p-4 border-t border-white/10 bg-[#1A1A2E] flex items-center justify-between">
-        <div className="text-xs text-[#9CA3AF]">
-          Word count: {content.split(/\s+/).filter(Boolean).length}
-        </div>
-        
-        <div className="flex gap-2">
+      <div className="p-4 border-t border-white/10 bg-[#1A1A2E] flex flex-col gap-4">
+        {(isAdmin || adminComments) && (
+          <div className="flex flex-col gap-2 w-full bg-[#0F0F1A] p-3 rounded-xl border border-white/5">
+            <label className="text-xs font-semibold text-[#A78BFA] flex items-center gap-1">
+              <MessageCircle className="w-3.5 h-3.5" /> Admin Feedback
+            </label>
+            <textarea
+              readOnly={!isAdmin}
+              value={adminComments}
+              onChange={(e) => setAdminComments(e.target.value)}
+              placeholder={isAdmin ? "Add comments or requested changes for the member..." : "No comments from admin yet."}
+              className={`w-full h-20 bg-transparent text-[#E5E7EB] text-sm resize-none focus:outline-none scrollbar-thin scrollbar-thumb-white/10 ${isAdmin ? "focus:ring-2 focus:ring-[#8B5CF6]/50 rounded-lg p-2 -m-2 transition-all" : ""}`}
+            />
+            {isAdmin && adminComments !== (document.adminComments || "") && (
+              <div className="flex justify-end mt-1">
+                <button
+                  onClick={handleSaveComment}
+                  disabled={savingComment}
+                  className="px-3 py-1.5 bg-[#8B5CF6]/20 hover:bg-[#8B5CF6]/30 text-[#A78BFA] text-xs font-medium rounded-lg transition-colors flex items-center disabled:opacity-50"
+                >
+                  {savingComment ? <Loader2 className="w-3 h-3 mr-1.5 animate-spin" /> : <Save className="w-3 h-3 mr-1.5" />}
+                  Save Comment
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-[#9CA3AF]">
+            Word count: {content.split(/\s+/).filter(Boolean).length}
+          </div>
+          
+          <div className="flex gap-2">
           {canEdit && (
             <>
               <button
@@ -173,6 +209,7 @@ export function DocumentCard({
               <CheckCircle2 className="w-4 h-4 mr-2" /> Ready to Publish
             </button>
           )}
+        </div>
         </div>
       </div>
     </div>

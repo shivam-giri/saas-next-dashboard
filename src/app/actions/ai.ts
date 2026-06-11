@@ -236,3 +236,28 @@ export async function deleteCampaignAction(campaignId: string, workspaceId: stri
   revalidatePath(`/dashboard/[workspaceSlug]/campaigns`, "page");
   return { success: true };
 }
+
+export async function updateDocumentCommentAction(
+  documentId: string,
+  adminComments: string,
+  workspaceId: string
+) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Unauthorized" };
+
+  const membership = await prisma.workspaceMember.findUnique({
+    where: { userId_workspaceId: { userId: session.user.id, workspaceId } },
+  });
+
+  if (!membership || membership.role !== "ADMIN") {
+    return { error: "Only admins can add comments." };
+  }
+
+  await prisma.contentDocument.update({
+    where: { id: documentId },
+    data: { adminComments },
+  });
+
+  revalidatePath(`/dashboard/[workspaceSlug]/campaigns/[campaignId]`, "page");
+  return { success: true };
+}

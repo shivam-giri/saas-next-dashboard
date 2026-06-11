@@ -188,6 +188,7 @@ model ContentDocument {
   type            ContentType
   status          DocumentStatus @default(DRAFT)
   createdById     String
+  adminComments   String?   @db.Text
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

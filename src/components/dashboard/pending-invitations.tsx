@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { revokeInvitationAction } from "@/app/actions/team";
 
 interface PendingInvitation {
@@ -57,9 +57,14 @@ function InvitationRow({
 }) {
     const [, formAction, pending] = useActionState(revokeInvitationAction, null);
 
-    const daysLeft = Math.ceil(
-        (new Date(invitation.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-    );
+    const [daysLeft, setDaysLeft] = useState<number | null>(null);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setDaysLeft(Math.ceil(
+            (new Date(invitation.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+        ));
+    }, [invitation.expiresAt]);
 
     return (
         <tr className="border-b last:border-b-0 hover:bg-[#0F0F1A]/50">
@@ -75,7 +80,7 @@ function InvitationRow({
                 </span>
             </td>
             <td className="py-3 px-6 text-[#9CA3AF]">
-                {daysLeft > 0 ? `in ${daysLeft}d` : "Today"}
+                {daysLeft !== null ? (daysLeft > 0 ? `in ${daysLeft}d` : "Today") : "..."}
             </td>
             <td className="py-3 px-6 text-right">
                 <form action={formAction}>

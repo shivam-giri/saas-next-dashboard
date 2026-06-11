@@ -5,17 +5,17 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { hasActiveSubscription } from "@/lib/stripe";
 
-export async function createWorkspaceAction(formData: FormData) {
+export async function createWorkspaceAction(prevState: any, formData: FormData) {
  const session = await auth();
  const userId = session?.user?.id;
- if (!userId) {
- throw new Error("Unauthorized");
- }
+  if (!userId) {
+    return { error: "Unauthorized" };
+  }
 
- const workspaceName = formData.get("workspaceName") as string;
- if (!workspaceName || workspaceName.trim() === "") {
- throw new Error("Workspace name is required");
- }
+  const workspaceName = formData.get("workspaceName") as string;
+  if (!workspaceName || workspaceName.trim() === "") {
+    return { error: "Workspace name is required" };
+  }
 
  // Check workspace limit
  const memberships = await prisma.workspaceMember.findMany({
@@ -23,40 +23,46 @@ export async function createWorkspaceAction(formData: FormData) {
      include: { workspace: true }
  });
 
- if (memberships.length >= 3) {
-     const hasPro = memberships.some(m => hasActiveSubscription(m.workspace.stripeSubscriptionId, m.workspace.stripeCurrentPeriodEnd));
-     if (!hasPro) {
-         throw new Error("Free Plan can add up to 3 workspaces. Please upgrade to Pro.");
-     }
- }
+  if (memberships.length >= 3) {
+      const hasPro = memberships.some(m => hasActiveSubscription(m.workspace.stripeSubscriptionId, m.workspace.stripeCurrentPeriodEnd));
+      if (!hasPro) {
+          return { error: "Free Plan can add up to 3 workspaces. Please upgrade to Pro." };
+      }
+  }
 
  // Auto-generate a URL-friendly slug (e.g. "My Startup" -> "my-startup")
  const slug = workspaceName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
- // Run a database transaction to create the Workspace AND the Membership simultaneously
- await prisma.$transaction(async (tx) => {
- // Ensure slug doesn't already exist
- const existing = await tx.workspace.findUnique({ where: { slug } });
- if (existing) {
- throw new Error("Workspace already exists");
- }
+  // Run a database transaction to create the Workspace AND the Membership simultaneously
+  const txResult = await prisma.$transaction(async (tx) => {
+    // Ensure slug doesn't already exist
+    const existing = await tx.workspace.findUnique({ where: { slug } });
+    if (existing) {
+      return { error: "A workspace with this name already exists. Please choose a different name." };
+    }
 
- const newWorkspace = await tx.workspace.create({
- data: {
- name: workspaceName,
- slug: slug,
- },
- });
+    const newWorkspace = await tx.workspace.create({
+      data: {
+        name: workspaceName,
+        slug: slug,
+      },
+    });
 
- // The user creating this workspace is instantly granted the ADMIN role
- await tx.workspaceMember.create({
- data: {
- userId: userId,
- workspaceId: newWorkspace.id,
- role: "ADMIN",
- },
- });
- });
+    // The user creating this workspace is instantly granted the ADMIN role
+    await tx.workspaceMember.create({
+      data: {
+        userId: userId,
+        workspaceId: newWorkspace.id,
+        role: "ADMIN",
+      },
+    });
+    
+    return { success: true };
+  });
+
+  if (txResult.error) {
+    return txResult;
+  }
 
  // Successful creation! Redirect them to their brand new dashboard.
  redirect(`/dashboard/${slug}`);
