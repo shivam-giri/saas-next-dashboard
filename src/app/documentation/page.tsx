@@ -4,6 +4,9 @@ import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+import remarkGfm from "remark-gfm";
+import { Mermaid } from "@/components/mermaid";
+
 export default function DocumentationPage() {
   const docsDir = path.join(process.cwd(), "src", "docs");
   
@@ -50,7 +53,24 @@ export default function DocumentationPage() {
                 <span className="text-sm font-bold tracking-wider text-[#A78BFA] uppercase">Document {index + 1}</span>
                 <span className="text-xs text-slate-500 font-mono bg-white/5 px-3 py-1.5 rounded-md border border-white/5">{doc.filename}</span>
               </div>
-              <ReactMarkdown>{doc.content}</ReactMarkdown>
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  code({ node, inline, className, children, ...props }: any) {
+                    const match = /language-(\w+)/.exec(className || "");
+                    if (!inline && match && match[1] === "mermaid") {
+                      return <Mermaid chart={String(children).replace(/\n$/, "")} />;
+                    }
+                    return (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    );
+                  }
+                }}
+              >
+                {doc.content}
+              </ReactMarkdown>
             </div>
           ) : null
         ))}
